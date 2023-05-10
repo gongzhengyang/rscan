@@ -7,9 +7,10 @@ edition = "2021"
 
 [dependencies]
 scanner = { path = "scanner" }
+command-parser = { path = "command-parser" }
 tokio = { version = "1", features = ["full"]}
 tracing = "0.1"
 tracing-subscriber = "0.3"
 
 [workspace]
-members = [".", "scanner"]
+members = [".", "scanner", "command-parser"]
