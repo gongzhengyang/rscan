@@ -1,5 +1,4 @@
 use std::net::SocketAddr;
-use std::time::Duration;
 
 use tokio::net::UdpSocket;
 
@@ -9,7 +8,7 @@ pub async fn udp_success(socket: SocketAddr, timeout: u64) -> bool {
     result.is_ok()
 }
 
-async fn udp_send(socket: SocketAddr, timeout: u64) -> anyhow::Result<()> {
+async fn udp_send(socket: SocketAddr, _timeout: u64) -> anyhow::Result<()> {
     let addr = UdpSocket::bind("0.0.0.0:0".parse::<SocketAddr>()?).await?;
 
     addr.connect(socket).await?;

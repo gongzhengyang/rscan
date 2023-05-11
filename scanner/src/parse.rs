@@ -1,7 +1,6 @@
-use ipnetwork::Ipv4Network;
 use std::str::FromStr;
 
-use crate::err::APPError;
+use ipnetwork::Ipv4Network;
 
 /// parse input like
 /// single ip `192.168.1.1`
@@ -25,8 +24,9 @@ pub fn parse_ipv4_cidr(value: &str) -> anyhow::Result<Vec<u32>> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::net::Ipv4Addr;
+
+    use super::*;
 
     #[test]
     fn multi_ipv4_values() {

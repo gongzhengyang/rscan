@@ -1,5 +1,5 @@
 use std::net::IpAddr;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 use pnet::packet::{
     icmp::{
@@ -34,7 +34,7 @@ pub async fn ping_ips(
     let channel_type = pnet_transport::TransportChannelType::Layer4(
         pnet_transport::TransportProtocol::Ipv4(IpNextHeaderProtocols::Icmp),
     );
-    let (mut tx, mut rx) = pnet_transport::transport_channel(4096, channel_type).unwrap();
+    let (mut tx, rx) = pnet_transport::transport_channel(4096, channel_type).unwrap();
     tokio::spawn(async move {
         receive_packets(rx).await;
     });
