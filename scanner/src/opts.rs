@@ -34,8 +34,8 @@ pub struct ScanOpts {
     /// scanning. Depends on the open file limit of your OS.  If you do 65535
     /// it will do every port at the same time. Although, your OS may not
     /// support this.
-    #[arg(long, default_value_t = 4500)]
-    pub batch_size: u16,
+    #[arg(long, default_value_t = 64)]
+    pub batch_size: usize,
 
     /// The timeout in milliseconds before a port is assumed to be closed.
     #[arg(long, default_value_t = 30)]

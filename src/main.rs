@@ -8,6 +8,7 @@ use scanner::opts::{Executes, ScanOpts};
 async fn main() {
     tracing_subscriber::fmt::init();
     let scan_opts = ScanOpts::parse();
+    scanner::ulimit::set_ulimit(1048567, 1048567).unwrap();
     let timeout = scan_opts.timeout;
     tracing::info!("waiting for {} seconds", timeout);
     match scan_opts.execute {
