@@ -24,3 +24,4 @@ rlimit = "0.9"
 clap = { version = "4.2", features = ["derive"] }
 ipnetwork = "0.20"
 tracing = "0.1"
+async-trait = "0.1"

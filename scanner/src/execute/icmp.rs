@@ -46,14 +46,17 @@ pub async fn ping_ips(scan_opts: ScanOpts) -> anyhow::Result<()> {
     interval.set_missed_tick_behavior(MissedTickBehavior::Delay);
     let now = tokio::time::Instant::now();
 
-    // let b = vec![1, 2];
+    let mut count = 0;
     for retry in 0..scan_opts.retries + 1 {
         for target_ip in &*scan_opts.hosts {
             let mut header = [0u8; ICMP_LEN];
             let mut icmp_packet = MutableEchoRequestPacket::new(&mut header).unwrap();
             modify_icmp_packet(&mut icmp_packet);
             tracing::debug!("build icmp success for {target_ip}");
+
+            count += 1;
             tx.send_to(icmp_packet, IpAddr::from(target_ip.clone())).unwrap();
+            tracing::debug!("send packets {count}");
         }
         tracing::info!("round[{retry}] sending {hosts_len} packets cost {} millis", now.elapsed().as_millis());
         interval.tick().await;
