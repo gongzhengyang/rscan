@@ -1,5 +1,6 @@
+use std::net::Ipv4Addr;
+
 use clap::{Parser, ValueEnum};
-use std::net::{IpAddr, Ipv4Addr};
 
 use crate::parse::{parse_hosts, parse_ports};
 
@@ -15,7 +16,6 @@ pub enum Executes {
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
-///
 pub struct ScanOpts {
     /// choose a  executor
     #[arg(value_enum)]
@@ -46,5 +46,5 @@ pub struct ScanOpts {
 
     /// The seconds retry interval when retries is set bigger than 0
     #[arg(long, default_value_t = 1)]
-    pub retry_interval: u8,
+    pub retry_interval: u64,
 }

@@ -1,9 +1,5 @@
-mod cli;
-mod err;
-mod parse;
-
-use crate::cli::{Executes, ScanOpts};
 use clap::Parser;
+use scanner::command::cli::ScanOpts;
 
 #[tokio::main]
 async fn main() {

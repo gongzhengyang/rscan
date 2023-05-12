@@ -6,6 +6,7 @@ use serde::Serialize;
 #[derive(Debug, Serialize, PartialEq)]
 pub enum APPError {
     SplitIpPortFailed,
+    PortFormatError,
 }
 
 impl Display for APPError {
