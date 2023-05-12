@@ -2,7 +2,13 @@
 name = "scanner"
 version = "0.1.0"
 edition = "2021"
-
+categories = ["scan", "network", "ping"]
+description = "Fast scan network by sending icmp, tcp, udp packets, inspired by nmap but doesn't depend on nmap"
+keywords = ["ping", "tcp", "udp", "nmap", "scan"]
+authors = ["Gongzhengyang <gongzhengyangfindyourdream@gmail.com>"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/gongzhengyang/rscan"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
@@ -12,6 +18,5 @@ pnet = "0.33"
 pnet_transport = "0.33"
 rand = "0.8"
 chrono = "0.4"
-ipnetwork = "0.20"
 serde = { version = "1", features = ["derive"]}
 serde_json = "1"

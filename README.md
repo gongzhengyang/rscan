@@ -1,4 +1,4 @@
-
+Fast scan network by sending icmp, tcp, udp packets, inspired by nmap but doesn't depend on nmap
 
 ## License
 

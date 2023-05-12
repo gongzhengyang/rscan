@@ -2,15 +2,27 @@
 name = "rscan"
 version = "0.1.0"
 edition = "2021"
+categories = ["scan", "network", "ping"]
+description = "Fast scan network by sending icmp, tcp, udp packets, inspired by nmap but doesn't depend on nmap"
+keywords = ["ping", "tcp", "udp", "nmap", "scan"]
+authors = ["Gongzhengyang <gongzhengyangfindyourdream@gmail.com>"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/gongzhengyang/rscan"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 scanner = { path = "scanner" }
-command-parser = { path = "command-parser" }
 tokio = { version = "1", features = ["full"]}
 tracing = "0.1"
 tracing-subscriber = "0.3"
+rlimit = "0.9"
+serde = { version = "1", features = ["derive"]}
+anyhow = "1.0.71"
+serde_json = "1"
+clap = { version = "4.2", features = ["derive"] }
+ipnetwork = "0.20"
 
 [workspace]
-members = [".", "scanner", "command-parser"]
+members = [".", "scanner"]
