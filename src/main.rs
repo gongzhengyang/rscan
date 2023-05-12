@@ -1,24 +1,26 @@
 use clap::Parser;
-use scanner::command::cli::ScanOpts;
+use std::time::Duration;
+
+use scanner::execute;
+use scanner::opts::{Executes, ScanOpts};
 
 #[tokio::main]
 async fn main() {
-    let cli = ScanOpts::parse();
-    println!("{:?}", cli);
-    println!("{:?}", cli.execute);
-    println!("{:?}", cli.hosts);
-    println!("{:?}", cli.ports.concat());
-    // println!("{:?}", cli.ports_range.unwrap());
-    println!("{}", cli.batch_size);
-    println!("{}", cli.timeout);
-    println!("{}", cli.retries);
-    println!("{}", cli.retry_interval);
-    // match cli.command {
-    //     ExecuteSubcommands::Ping => {
-    //         println!("execute icmp");
-    //     }
-    //     _ => {
-    //         panic!("invalid protocol")
-    //     }
-    // }
+    tracing_subscriber::fmt::init();
+    let scan_opts = ScanOpts::parse();
+    let timeout = scan_opts.timeout;
+    tracing::info!("waiting for {} seconds", timeout);
+    match scan_opts.execute {
+        Executes::Ping => {
+            tracing::info!("execute icmp");
+            execute::icmp::ping_ips(scan_opts.clone())
+                .await
+                .unwrap();
+        }
+        _ => {
+            panic!("invalid protocol")
+        }
+    }
+
+    tokio::time::sleep(Duration::from_secs(timeout)).await;
 }

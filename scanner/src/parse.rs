@@ -1,22 +1,23 @@
 use std::net::Ipv4Addr;
 use std::str::FromStr;
+use std::sync::Arc;
+
+use ipnetwork::Ipv4Network;
 
 use crate::err::APPError;
-use ipnetwork::Ipv4Network;
 
 /// parse input like
 /// single ip `192.168.1.1`
 /// ip with cidr `192.168.1.0/12`
 /// combines all formats with comma separate `192.168.1.1,192.168.1.0,192.168.2.1/24`
-pub fn parse_hosts(value: &str) -> anyhow::Result<Vec<Ipv4Addr>> {
+pub fn parse_hosts(value: &str) -> anyhow::Result<Arc<Vec<Ipv4Addr>>> {
     let splits = value.split(',');
     let mut full_values = vec![];
     for i in splits {
         let results = parse_ipv4_cidr(i)?;
         full_values.extend(results);
     }
-    println!("{full_values:?}");
-    Ok(full_values)
+    Ok(Arc::new(full_values))
 }
 
 pub fn parse_ipv4_cidr(value: &str) -> anyhow::Result<Vec<Ipv4Addr>> {
@@ -28,13 +29,11 @@ pub fn parse_ipv4_cidr(value: &str) -> anyhow::Result<Vec<Ipv4Addr>> {
 pub fn parse_ports(input: &str) -> anyhow::Result<Vec<u16>> {
     let mut ports = vec![];
     for i in input.split(',') {
-        println!("----{i}");
         if i.contains('-') {
             ports.extend(parse_ports_range(i)?);
         } else {
             ports.push(i.parse::<u16>()?);
         }
-        println!("{ports:?}");
     }
     Ok(ports)
 }

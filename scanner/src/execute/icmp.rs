@@ -1,4 +1,4 @@
-use std::net::IpAddr;
+use std::net::{IpAddr, Ipv4Addr};
 use std::time::Duration;
 
 use pnet::packet::{
@@ -13,6 +13,10 @@ use pnet::packet::{
 use pnet_transport::TransportReceiver;
 use tokio::time::MissedTickBehavior;
 
+use crate::opts::ScanOpts;
+
+const ICMP_LEN: usize = 64;
+
 async fn receive_packets(mut rx: TransportReceiver) {
     let mut iter = pnet_transport::icmp_packet_iter(&mut rx);
     loop {
@@ -26,27 +30,32 @@ async fn receive_packets(mut rx: TransportReceiver) {
     }
 }
 
-pub async fn ping_ips(
-    target_ips: Vec<IpAddr>,
-    retries: u8,
-    retry_interval: u64,
-) -> anyhow::Result<()> {
+pub async fn ping_ips(scan_opts: ScanOpts) -> anyhow::Result<()> {
     let channel_type = pnet_transport::TransportChannelType::Layer4(
         pnet_transport::TransportProtocol::Ipv4(IpNextHeaderProtocols::Icmp),
     );
-    let (mut tx, rx) = pnet_transport::transport_channel(4096, channel_type).unwrap();
+    let hosts_len= scan_opts.hosts.len();
+    let (mut tx, rx) = pnet_transport::transport_channel(ICMP_LEN * (hosts_len + 1), channel_type)?;
+    let timeout = scan_opts.timeout;
     tokio::spawn(async move {
-        receive_packets(rx).await;
+        tokio::time::timeout(Duration::from_secs(timeout), receive_packets(rx))
+            .await
+            .unwrap_or_else(|e| tracing::info!("icmp packet receiver stopped because timeout"));
     });
-    let mut interval = tokio::time::interval(Duration::from_secs(retry_interval));
+    let mut interval = tokio::time::interval(Duration::from_secs(scan_opts.retry_interval));
     interval.set_missed_tick_behavior(MissedTickBehavior::Delay);
-    for _ in 0..retries {
-        for target_ip in &target_ips {
-            let mut header = [0u8; 64];
+    let now = tokio::time::Instant::now();
+
+    // let b = vec![1, 2];
+    for retry in 0..scan_opts.retries + 1 {
+        for target_ip in &*scan_opts.hosts {
+            let mut header = [0u8; ICMP_LEN];
             let mut icmp_packet = MutableEchoRequestPacket::new(&mut header).unwrap();
             modify_icmp_packet(&mut icmp_packet);
-            tx.send_to(icmp_packet, target_ip.clone())?;
+            tracing::debug!("build icmp success for {target_ip}");
+            tx.send_to(icmp_packet, IpAddr::from(target_ip.clone())).unwrap();
         }
+        tracing::info!("round[{retry}] sending {hosts_len} packets cost {} millis", now.elapsed().as_millis());
         interval.tick().await;
     }
     Ok(())
