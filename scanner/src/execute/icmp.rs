@@ -1,6 +1,6 @@
 use std::net::{IpAddr, Ipv4Addr};
-use std::time::Duration;
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::time::Duration;
 
 use pnet::packet::{
     icmp::{
@@ -12,7 +12,7 @@ use pnet::packet::{
     Packet,
 };
 use pnet_transport::TransportReceiver;
-use tokio::time::{MissedTickBehavior, timeout};
+use tokio::time::MissedTickBehavior;
 
 use crate::opts::ScanOpts;
 

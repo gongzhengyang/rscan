@@ -68,7 +68,7 @@ mod tests {
                 .map(|x| Ipv4Addr::from(x + cidr_start))
                 .collect::<Vec<Ipv4Addr>>(),
         );
-        assert_eq!(results, compare);
+        assert_eq!(results, Arc::new(compare));
     }
 
     #[test]
