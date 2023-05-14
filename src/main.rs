@@ -8,15 +8,13 @@ use scanner::opts::{Executes, ScanOpts};
 async fn main() {
     tracing_subscriber::fmt::init();
     let scan_opts = ScanOpts::parse();
-    scanner::ulimit::set_ulimit(1048567, 1048567).unwrap();
+    scanner::performance::set_ulimit(1048567, 1048567).unwrap();
     let timeout = scan_opts.timeout;
     tracing::info!("waiting for {} seconds", timeout);
     match scan_opts.execute {
         Executes::Ping => {
             tracing::info!("execute icmp");
-            execute::icmp::ping_ips(scan_opts.clone())
-                .await
-                .unwrap();
+            execute::icmp::ping_ips(scan_opts.clone()).await.unwrap();
         }
         _ => {
             panic!("invalid protocol")
