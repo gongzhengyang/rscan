@@ -6,6 +6,22 @@ use scanner::opts::{Executes, ScanOpts};
 
 #[tokio::main]
 async fn main() {
+    // let interfaces = pnet::datalink::interfaces();
+    // for i in interfaces {
+    //     i.is_up()
+    // if i.is_up() && !i.is_loopback() {
+    //     println!(
+    //         "{:?} up[{}] running[{}] broad[{}] loopback[{}] point[{}]",
+    //         i,
+    //         i.is_up(),
+    //         i.is_running(),
+    //         i.is_broadcast(),
+    //         i.is_loopback(),
+    //         i.is_point_to_point(),
+    //     );
+    // }
+    // }
+
     tracing_subscriber::fmt::init();
     let scan_opts = ScanOpts::parse();
     scanner::performance::set_ulimit(1048567, 1048567).unwrap();
@@ -20,6 +36,8 @@ async fn main() {
             panic!("invalid protocol")
         }
     }
+    use scanner::execute::icmp_interface;
 
+    // icmp_interface::send_with_interface();
     tokio::time::sleep(Duration::from_secs(timeout)).await;
 }
