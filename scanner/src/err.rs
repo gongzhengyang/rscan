@@ -7,6 +7,7 @@ use serde::Serialize;
 pub enum APPError {
     SplitIpPortFailed,
     PortFormatError,
+    PortIsEmpty,
     ULimitSoftBiggerThanHard,
 }
 

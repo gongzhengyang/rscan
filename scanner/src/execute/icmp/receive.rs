@@ -3,12 +3,7 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use hashbrown::HashSet;
-use pnet::packet::{
-    icmp::{
-        echo_reply::EchoReplyPacket,
-        IcmpTypes,
-    },
-};
+use pnet::packet::icmp::{echo_reply::EchoReplyPacket, IcmpTypes};
 use pnet::packet::Packet;
 use tokio::sync::OnceCell;
 
@@ -23,7 +18,11 @@ pub async fn receive_packets_handle() -> &'static Arc<Mutex<HashSet<IpAddr>>> {
 }
 
 pub async fn is_addr_received(addr: &IpAddr) -> bool {
-    receive_packets_handle().await.lock().unwrap().contains(addr)
+    receive_packets_handle()
+        .await
+        .lock()
+        .unwrap()
+        .contains(addr)
 }
 
 pub async fn receive_packets() -> anyhow::Result<()> {
@@ -37,7 +36,7 @@ pub async fn receive_packets() -> anyhow::Result<()> {
             }
             if let Some(reply_packet) = EchoReplyPacket::new(packet.packet()) {
                 if reply_packet.get_icmp_type() == IcmpTypes::EchoReply {
-                    println!("icmp receive {addr}");
+                    println!("rscan|icmp|{addr}|");
                     let mut receive_handle = receive_packets_handle().await.lock().unwrap();
                     receive_handle.insert(addr);
                 }

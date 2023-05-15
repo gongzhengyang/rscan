@@ -1,13 +1,13 @@
 use std::net::Ipv4Addr;
 
 use pnet::datalink::{Channel, MacAddr};
+use pnet::packet::ethernet::EtherTypes;
+use pnet::packet::ethernet::MutableEthernetPacket;
 use pnet::packet::{
     icmp::echo_request::MutableEchoRequestPacket, ip::IpNextHeaderProtocols,
     ipv4::MutableIpv4Packet,
 };
 use pnet::packet::{MutablePacket, Packet};
-use pnet::packet::ethernet::EtherTypes;
-use pnet::packet::ethernet::MutableEthernetPacket;
 
 use crate::interfaces;
 

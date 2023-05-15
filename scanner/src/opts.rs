@@ -1,8 +1,10 @@
-use clap::{Parser, ValueEnum};
-use std::net::Ipv4Addr;
+use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::sync::Arc;
 
+use clap::{Parser, ValueEnum};
+
 use super::parse::{parse_hosts, parse_ports};
+use super::err::APPError;
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug, Default)]
 pub enum Executes {
@@ -28,7 +30,7 @@ pub struct ScanOpts {
 
     /// A list of comma separed ports to be scanned. Example: 80,443,1-100,1-7.
     #[arg(short, long, value_parser = parse_ports)]
-    pub ports: Option<Arc<Vec<Vec<u16>>>>,
+    pub ports: Option<Arc<Vec<u16>>>,
 
     /// The batch size for port scanning, it increases or slows the speed of
     /// scanning. Depends on the open file limit of your OS.  If you do 65535
@@ -48,4 +50,21 @@ pub struct ScanOpts {
     /// The seconds retry interval when retry is set bigger than 0
     #[arg(long, default_value_t = 1)]
     pub retry_interval: u64,
+
+    /// every single operation timeout, tcp connect timeout ro udp timeout
+    #[arg(long, default_value_t = 1)]
+    pub per_timeout: u64,
+}
+
+impl ScanOpts {
+    pub fn iter_sockets(&self) -> anyhow::Result<Vec<SocketAddr>>{
+        if let Some(ports) = self.ports.clone() {
+            let hosts = (*(self.hosts.clone())).clone();
+            let ports = (*(ports.clone())).clone();
+            let port_hosts = itertools::iproduct!(ports, hosts);
+            Ok(port_hosts.into_iter().map(|(port, host)| SocketAddr::new(IpAddr::V4(host), port)).collect::<Vec<SocketAddr>>())
+        } else {
+            Err(APPError::PortIsEmpty.into())
+        }
+    }
 }

@@ -12,8 +12,12 @@ async fn main() {
     tracing::info!("waiting for {} seconds", timeout);
     match scan_opts.execute {
         Executes::Ping => {
-            tracing::info!("execute icmp");
-            execute::icmp::ping_ips(scan_opts.clone()).await.unwrap();
+            tracing::info!("execute icmp scan");
+            execute::icmp::scan(scan_opts.clone()).await.unwrap();
+        }
+        Executes::Tcp => {
+            tracing::info!("execute tcp scan");
+            execute::tcp::scan(scan_opts).await.unwrap();
         }
         _ => {
             panic!("invalid protocol")
