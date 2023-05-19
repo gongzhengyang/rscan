@@ -23,3 +23,7 @@ console-subscriber = "0.1.9"
 
 [workspace]
 members = [".", "rscanner"]
+
+[profile.release]
+lto = true
+strip = true
