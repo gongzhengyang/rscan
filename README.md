@@ -1,4 +1,45 @@
-Fast scan network by sending icmp, tcp, udp packets, inspired by nmap but doesn't depend on nmap
+A modern port scanner and icmp scanner. Fast, effective.
+
+Fast scan network by sending icmp, tcp packets, inspired by nmap but doesn't depend on nmap.
+
+## Usage
+
+you will need root privileges to execute
+
+### ping scanner
+
+you can ping a cidr，ip, separated by commas
+
+```
+$ sudo ./rscan ping 1.1.1.1/28,1.0.0.0/24 --timeout 10
+rscan|icmp|1.0.0.50|
+rscan|icmp|1.0.0.52|
+rscan|icmp|1.0.0.121|
+rscan|icmp|1.1.1.5|
+rscan|icmp|1.1.1.6|
+rscan|icmp|1.0.0.60|
+rscan|icmp|1.0.0.247|
+rscan|icmp|1.1.1.10|
+rscan|icmp|1.0.0.55|
+rscan|icmp|1.0.0.116|
+rscan|icmp|1.1.1.12|
+....
+send 272 ips, receive packets from 272 ips
+```
+
+you can still set a env named RUST_LOG to get more log info
+
+```
+$ sudo RUST_LOG=debug ./rscan ping 1.1.1.1/28,1.0.0.0/24 --timeout 10
+```
+
+or
+
+```
+export RUST_LOG=debug
+```
+
+
 
 ## License
 

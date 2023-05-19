@@ -1,6 +1,6 @@
 [package]
 name = "scanner"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 categories = ["scan", "network", "ping"]
 description = "Fast scan network by sending icmp, tcp, udp packets, inspired by nmap but doesn't depend on nmap"

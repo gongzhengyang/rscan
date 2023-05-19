@@ -1,6 +1,3 @@
-# https://github.com/cross-rs/cross
-# 由于交叉编译依赖的项目0.2.5版本许多镜像版本比较旧, 所以需要使用main分支上生成的edge镜像
-
 [target.x86_64-unknown-freebsd]
 image = "ghcr.io/cross-rs/x86_64-unknown-freebsd:edge"
 

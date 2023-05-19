@@ -44,7 +44,7 @@ pub async fn scan(scan_opts: ScanOpts) -> anyhow::Result<()> {
             println!("send {send_count} ips, receive packets from {total_received} ips");
         }
         Ok(e) => {
-            tracing::info!("something wrong with {e:?}");
+            tracing::error!("something wrong with {e:?}");
         }
     }
     Ok(())
