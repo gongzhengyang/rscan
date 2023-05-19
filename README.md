@@ -2,6 +2,12 @@ A modern port scanner and `icmp` scanner. Fast, effective.
 
 Fast scan network by sending `icmp`, `tcp` packets, inspired by `nmap` but doesn't depend on `nmap`.
 
+## Supported Platforms
+
+- Linux
+- Android
+- FreeBSD
+
 ## Usage
 
 you will need root privileges to execute
