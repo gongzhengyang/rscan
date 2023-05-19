@@ -8,6 +8,7 @@ use crate::opts::ScanOpts;
 use crate::sockets_iter::SocketIterator;
 
 pub async fn tcp_success(socket: SocketAddr, timeout: u64) {
+    tracing::debug!("trying connect socket {socket} with timeout {timeout}");
     if tcp_connect(socket, timeout).await.is_ok() {
         println!("rscan|tcp|{socket}|");
     }
@@ -21,7 +22,7 @@ pub async fn scan(scan_opts: ScanOpts) -> anyhow::Result<()> {
     let ips = scan_opts
         .hosts
         .iter()
-        .map(|x| IpAddr::V4(x.clone()))
+        .map(|x| IpAddr::V4(*x))
         .collect::<Vec<IpAddr>>();
     let ports = scan_opts.ports.ok_or(APPError::PortIsEmpty)?;
     let socket_iter = SocketIterator::new(&ips, &ports);

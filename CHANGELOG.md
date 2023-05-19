@@ -13,5 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # 0.2.0 (19. May, 2023)
 
-- **added:** cmd parse with full args
+- **added:** `cmd` parse with full `args`
 - **added:** add `tokio-console` for task schedule manage 
+- **added:** add `build-release.sh` to improve makefile 

@@ -6,15 +6,14 @@ use scanner::opts::{Executes, ScanOpts};
 #[tokio::main]
 async fn main() {
     // used for tokio task manage
-    // console_subscriber::init();
-    tracing_subscriber::fmt::init();
+    console_subscriber::init();
     let scan_opts = ScanOpts::parse();
     #[cfg(unix)]
     scanner::performance::improve_limits().unwrap();
     let timeout = scan_opts.timeout;
     tracing::info!("waiting for {} seconds", timeout);
     match scan_opts.execute {
-        Executes::Ping => {
+        Executes::Icmp => {
             tracing::info!("execute icmp scan");
             execute::icmp::scan(scan_opts.clone()).await.unwrap();
         }

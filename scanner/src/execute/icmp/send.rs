@@ -24,7 +24,7 @@ pub async fn scan(scan_opts: ScanOpts) -> anyhow::Result<()> {
             for chunk_hosts in scan_opts.hosts.chunks(scan_opts.batch_size) {
                 let chunk_hosts_cloned = chunk_hosts.to_vec();
                 tokio::spawn(async move {
-                    ping_ips_chunks(chunk_hosts_cloned).await.unwrap();
+                    icmp_ips_chunks(chunk_hosts_cloned).await.unwrap();
                 });
             }
             interval.tick().await;
@@ -50,7 +50,7 @@ pub async fn scan(scan_opts: ScanOpts) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub async fn ping_ips_chunks(hosts: Vec<Ipv4Addr>) -> anyhow::Result<()> {
+pub async fn icmp_ips_chunks(hosts: Vec<Ipv4Addr>) -> anyhow::Result<()> {
     let (mut tx, _) = common::get_transport_channel()?;
     for host in hosts {
         let mut header = [0u8; common::ICMP_LEN];

@@ -22,8 +22,8 @@ pub fn set_ulimit(soft: u64, hard: u64) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn set_sysctl_conf() -> anyhow::Result<()>{
-    for config in vec![
+pub fn set_sysctl_conf() -> anyhow::Result<()> {
+    for config in &[
         "net.unix.max_dgram_qlen=100000000",
         // Bigger buffers (to make 40Gb more practical). These are maximums, but the default is unaffected.
         "net.core.wmem_max=268435456",
@@ -42,9 +42,7 @@ pub fn set_sysctl_conf() -> anyhow::Result<()>{
         // Increase number of multicast groups permitted
         "net.ipv4.igmp_max_memberships=10240",
     ] {
-        let output = Command::new("sysctl")
-            .args(["-w", config])
-            .output()?;
+        let output = Command::new("sysctl").args(["-w", config]).output()?;
         tracing::info!("stdout: {}", String::from_utf8(output.stdout)?);
     }
     Ok(())

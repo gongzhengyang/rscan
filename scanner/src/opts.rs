@@ -8,9 +8,11 @@ use super::parse::{parse_hosts, parse_ports};
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug, Default)]
 pub enum Executes {
     #[default]
-    /// send ping to discover hosts reply icmp packets,all packets build by rust purely
-    Ping,
-    /// use tcp handshake to check tcp ports is open
+    /// send icmp to discover hosts reply icmp packets,all packets build by rust purely
+    /// use can be `sudo rscan icmp 1.1.1.1/24`
+    Icmp,
+    /// use tcp handshake to check tcp ports is open, basic can be
+    /// `sudo rscan tcp 10.30.6.151/24 --ports 80-1000 --timeout 10`
     Tcp,
     /// send udp packets to remote hosts to check udp opened based on icmp reply
     Udp,

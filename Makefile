@@ -1,11 +1,14 @@
+export VERSION=$(shell head Cargo.toml -n 3 | tail -n 1| awk '{ print $$3}' | sed 's/"//g')
+export RUSTFLAGS=--cfg tokio_unstable
+
 .PHONY: fmt
 fmt:
 	cargo fmt
-	cargo clippy --fix --allow-dirty --all-features
+	cargo clippy --all-features
 
 .PHONY: linux
 linux:
-	cross build -r --target x86_64-unknown-linux-musl
+	ARCH=x86_64-unknown-linux-musl bash build-release.sh
 
 #todo
 #.PHONY: windows
@@ -14,11 +17,11 @@ linux:
 
 .PHONY: freebsd
 freebsd:
-	cross build -r --target x86_64-unknown-freebsd
+	ARCH=x86_64-unknown-freebsd bash build-release.sh
 
 .PHONY: android
 android:
-	cross build -r --target aarch64-linux-android
+	ARCH=aarch64-linux-android bash build-release.sh
 
 .PHONY: all
 all: linux freebsd android

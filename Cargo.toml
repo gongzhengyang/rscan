@@ -1,10 +1,10 @@
 [package]
 name = "rscan"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
-categories = ["scan", "network", "ping"]
+categories = ["scan", "network", "icmp"]
 description = "Fast scan network by sending icmp, tcp, udp packets, inspired by nmap but doesn't depend on nmap"
-keywords = ["ping", "tcp", "udp", "nmap", "scan"]
+keywords = ["icmp", "tcp", "udp", "nmap", "scan"]
 authors = ["Gongzhengyang <gongzhengyangfindyourdream@gmail.com>"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
