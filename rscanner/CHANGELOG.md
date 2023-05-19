@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-# 0.2.0（19. May, 2023）
+# 0.2.1（19. May, 2023）
 
 - **added:** icmp, tcp scan support
 - **added:** system default limit change
