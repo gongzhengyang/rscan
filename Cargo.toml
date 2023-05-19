@@ -1,8 +1,8 @@
 [package]
 name = "rscan"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
-categories = ["scan", "network", "icmp"]
+categories = ["asynchronous", "command-line-utilities", "network-programming"]
 description = "Fast scan network by sending icmp, tcp, udp packets, inspired by nmap but doesn't depend on nmap"
 keywords = ["icmp", "tcp", "udp", "nmap", "scan"]
 authors = ["Gongzhengyang <gongzhengyangfindyourdream@gmail.com>"]
