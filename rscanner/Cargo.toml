@@ -1,5 +1,5 @@
 [package]
-name = "scanner"
+name = "rscanner"
 version = "0.2.0"
 edition = "2021"
 categories = ["scan", "network", "icmp"]

@@ -1,7 +1,7 @@
 use clap::Parser;
 
-use scanner::execute;
-use scanner::opts::{Executes, ScanOpts};
+use rscanner::execute;
+use rscanner::opts::{Executes, ScanOpts};
 
 #[tokio::main]
 async fn main() {
@@ -9,7 +9,7 @@ async fn main() {
     console_subscriber::init();
     let scan_opts = ScanOpts::parse();
     #[cfg(unix)]
-    scanner::performance::improve_limits().unwrap();
+    rscanner::performance::improve_limits().unwrap();
     let timeout = scan_opts.timeout;
     tracing::info!("waiting for {} seconds", timeout);
     match scan_opts.execute {

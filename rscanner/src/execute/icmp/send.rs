@@ -18,7 +18,7 @@ pub async fn scan(scan_opts: ScanOpts) -> anyhow::Result<()> {
     interval.set_missed_tick_behavior(MissedTickBehavior::Delay);
 
     let timeout = scan_opts.timeout;
-    tracing::info!("scanner timeout is {timeout}");
+    tracing::info!("rscanner timeout is {timeout}");
     tokio::spawn(async move {
         for _ in 0..scan_opts.retry + 1 {
             for chunk_hosts in scan_opts.hosts.chunks(scan_opts.batch_size) {
