@@ -12,7 +12,7 @@ repository = "https://github.com/gongzhengyang/rscan"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version = "1", features = ["full"] }
+tokio = { version = "1", features = ["full", "tracing"] }
 anyhow = "1.0.71"
 pnet = "0.33"
 pnet_transport = "0.33"

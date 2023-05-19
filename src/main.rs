@@ -5,7 +5,7 @@ use scanner::opts::{Executes, ScanOpts};
 
 #[tokio::main]
 async fn main() {
-    tracing_subscriber::fmt::init();
+    console_subscriber::init();
     let scan_opts = ScanOpts::parse();
     scanner::performance::set_ulimit(1048567, 1048567).unwrap();
     let timeout = scan_opts.timeout;

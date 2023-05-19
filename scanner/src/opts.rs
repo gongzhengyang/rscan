@@ -1,11 +1,9 @@
-use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use std::net::Ipv4Addr;
 use std::sync::Arc;
 
 use clap::{Parser, ValueEnum};
-use crate::sockets_iter::SocketIterator;
 
 use super::parse::{parse_hosts, parse_ports};
-use super::err::APPError;
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug, Default)]
 pub enum Executes {
@@ -53,22 +51,6 @@ pub struct ScanOpts {
     pub retry_interval: u64,
 
     /// every single operation timeout, tcp connect timeout ro udp timeout
-    #[arg(long, default_value_t = 1)]
+    #[arg(long, default_value_t = 3)]
     pub per_timeout: u64,
-}
-
-impl ScanOpts {
-    pub fn iter_sockets(&self) -> anyhow::Result<SocketIterator> {
-        if let Some(ports) = self.ports.clone() {
-            Ok(SocketIterator::new(&*self.hosts.into_iter().map(|x|IpAddr::V4(Ipv4Addr)), &*self.ports))
-            // let hosts = (*(self.hosts.clone())).clone();
-            // let ports = (*(ports.clone())).clone();
-            // let port_hosts = itertools::iprboduct!(ports, hosts);
-            // let iter = port_hosts.into_iter()
-            //     .map(|(port, host)| SocketAddr::new(IpAddr::V4(host), port));
-            // Ok(iter)
-        } else {
-            Err(APPError::PortIsEmpty.into())
-        }
-    }
 }

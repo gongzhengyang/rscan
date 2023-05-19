@@ -2,8 +2,7 @@ use itertools::{iproduct, Product};
 use std::net::{IpAddr, SocketAddr};
 
 pub struct SocketIterator<'s> {
-    product_it:
-    Product<Box<std::slice::Iter<'s, u16>>, Box<std::slice::Iter<'s, std::net::IpAddr>>>,
+    product_it: Product<Box<std::slice::Iter<'s, u16>>, Box<std::slice::Iter<'s, IpAddr>>>,
 }
 
 impl<'s> SocketIterator<'s> {
