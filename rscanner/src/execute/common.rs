@@ -17,6 +17,10 @@ pub trait SocketScanner {
         Ok(())
     }
 
+    async fn pre_send_socket(_socket: &SocketAddr) -> anyhow::Result<()> {
+        Ok(())
+    }
+
     async fn scan(scan_opts: ScanOpts) -> anyhow::Result<()> {
         Self::pre_scan(&scan_opts).await?;
         let ips = scan_opts
@@ -28,6 +32,9 @@ pub trait SocketScanner {
         let socket_iter = SocketIterator::new(&ips, &ports);
         for socket_addr in socket_iter {
             let per_timeout = scan_opts.per_timeout;
+            Self::pre_send_socket(&socket_addr)
+                .await
+                .unwrap_or_else(|e| tracing::error!("pre send socket error with {e:?}"));
             tokio::spawn(async move { Self::socket_success(socket_addr, per_timeout).await });
         }
         tokio::time::sleep(Duration::from_secs(scan_opts.timeout)).await;

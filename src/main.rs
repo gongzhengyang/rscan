@@ -26,6 +26,10 @@ async fn main() {
         }
         Executes::Udp => {
             tracing::info!("execute udp scan");
+            tracing::warn!(
+                "udp scan based on icmp reply with Port Unreachable with udp packets,\
+             please make sure timeout is big enough to receive all icmp for all udp packets"
+            );
             execute::udp::UdpSocketScanner::scan(scan_opts)
                 .await
                 .unwrap();
