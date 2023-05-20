@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 
 
+# 0.3.0 (10. May, 2023)
 
+- **added:** add common trait named `SocketScanner` for `tcp/udp` scan
+- **changed:** change `rscanner/execute/tcp` to `impl SocketScanner`
+- **added:** add `udp` scanner 
 
 # 0.2.1（19. May, 2023）
 
-- **added:** icmp, tcp scan support
+- **added:** `icmp`, `tcp` scan support
 - **added:** system default limit change

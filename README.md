@@ -1,12 +1,18 @@
 A modern port scanner and `icmp` scanner. Fast, effective.
 
-Fast scan network by sending `icmp`, `tcp` packets, inspired by `nmap` but doesn't depend on `nmap`.
+Fast scan network by sending `icmp`, `tcp/udp` packets, inspired by `nmap` but doesn't depend on `nmap`.
 
 ## Supported Platforms
 
-- Linux
-- Android
-- FreeBSD
+- `Linux`
+- `Android`
+- `FreeBSD`
+
+## Supported Scan protocols
+
+- `icmp/ping`
+- `tcp`
+- `udp`
 
 ## Usage
 
@@ -18,14 +24,6 @@ you can `icmp` a `cidr`，`ipaddress`, separated by commas, set timeout argument
 
 ```
 $ sudo ./rscan icmp 1.1.1.1/28,1.0.0.0/24 --timeout 10
-rscan|icmp|1.0.0.50|
-rscan|icmp|1.0.0.52|
-rscan|icmp|1.0.0.121|
-rscan|icmp|1.1.1.5|
-rscan|icmp|1.1.1.6|
-rscan|icmp|1.0.0.60|
-rscan|icmp|1.0.0.247|
-rscan|icmp|1.1.1.10|
 rscan|icmp|1.0.0.55|
 rscan|icmp|1.0.0.116|
 rscan|icmp|1.1.1.12|
@@ -52,17 +50,22 @@ use `tcp` as argument, add ports options
 
 ```
 $ sudo ./rscan tcp 1.1.1.1/28 --ports 80,443 --timeout 10
-rscan|tcp|1.1.1.11:80|
-rscan|tcp|1.1.1.12:443|
-rscan|tcp|1.1.1.11:443|
-rscan|tcp|1.1.1.10:80|
-rscan|tcp|1.1.1.7:443|
-rscan|tcp|1.1.1.3:443|
-rscan|tcp|1.1.1.6:443|
-rscan|tcp|1.1.1.5:80|
 rscan|tcp|1.1.1.10:443|
 rscan|tcp|1.1.1.3:80|
 rscan|tcp|1.1.1.7:80|
+...
+```
+
+### `udp` Scan
+
+`udp` scan based on `icmp` reply with Port Unreachable for `udp` packets if `udp` port is not open, please make sure timeout is big enough to receive all `icmp` for all `udp` packets, so the `udp` scan cannot guarantee 100% accuracy.
+
+Each `ip` limit sends `udp` packets at least 0.5 seconds apart.
+
+```
+$ sudo ./rscan udp 10.30.6.0/24 --ports 151-165 --timeout=50
+rscan|udp|10.30.6.165:161|
+rscan|udp|10.30.6.200:162|
 ...
 ```
 
