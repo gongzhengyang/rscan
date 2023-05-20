@@ -13,6 +13,7 @@ async fn main() {
     rscanner::performance::improve_limits().unwrap();
     let timeout = scan_opts.timeout;
     tracing::info!("waiting for {} seconds", timeout);
+
     match scan_opts.execute {
         Executes::Icmp => {
             tracing::info!("execute icmp scan");
@@ -33,6 +34,10 @@ async fn main() {
             execute::udp::UdpSocketScanner::scan(scan_opts)
                 .await
                 .unwrap();
+        }
+        Executes::Arp => {
+            tracing::info!("execute arp scan");
+            execute::arp::scan(scan_opts).await.unwrap()
         }
     }
 }

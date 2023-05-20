@@ -10,17 +10,14 @@ use pnet::packet::{
 use pnet::packet::{MutablePacket, Packet};
 
 use crate::interfaces;
+use crate::interfaces::interface_normal_running;
 
 use super::common;
 
 pub fn send_with_interface(target_ip: Ipv4Addr) {
     tracing::debug!("{target_ip} send by specific interface");
     for interface in pnet::datalink::interfaces() {
-        #[cfg(unix)]
-        if !interface.is_running() {
-            continue;
-        }
-        if interface.is_loopback() {
+        if !interface_normal_running(&interface) {
             continue;
         }
         if let Some(source_ip) = interfaces::get_interface_ipv4(&interface) {

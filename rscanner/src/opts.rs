@@ -16,6 +16,8 @@ pub enum Executes {
     Tcp,
     /// send udp packets to remote hosts to check udp opened based on icmp reply
     Udp,
+    /// send arp packets
+    Arp,
 }
 
 #[derive(Parser, Debug, Default, Clone)]

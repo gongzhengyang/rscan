@@ -20,6 +20,17 @@ pub fn get_interface_by_name(interface_name: &str) -> NetworkInterface {
         .unwrap()
 }
 
+pub fn interface_normal_running(interface: &NetworkInterface) -> bool {
+    #[cfg(unix)]
+    if !interface.is_running() {
+        return false;
+    }
+    if interface.is_loopback() {
+        return false;
+    }
+    true
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
