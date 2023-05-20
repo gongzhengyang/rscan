@@ -69,6 +69,5 @@ pub async fn icmp_ips_chunks(hosts: Vec<Ipv4Addr>) -> anyhow::Result<()> {
         R.fetch_add(1, Ordering::Relaxed);
         tracing::debug!("sending packets count {}", R.load(Ordering::Relaxed));
     }
-
     Ok(())
 }

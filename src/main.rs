@@ -1,6 +1,7 @@
 use clap::Parser;
 
 use rscanner::execute;
+use rscanner::execute::common::SocketScanner;
 use rscanner::opts::{Executes, ScanOpts};
 
 #[tokio::main]
@@ -19,10 +20,15 @@ async fn main() {
         }
         Executes::Tcp => {
             tracing::info!("execute tcp scan");
-            execute::tcp::scan(scan_opts).await.unwrap();
+            execute::tcp::TcpSocketScanner::scan(scan_opts)
+                .await
+                .unwrap();
         }
-        _ => {
-            panic!("invalid protocol")
+        Executes::Udp => {
+            tracing::info!("execute udp scan");
+            execute::udp::UdpSocketScanner::scan(scan_opts)
+                .await
+                .unwrap();
         }
     }
 }
