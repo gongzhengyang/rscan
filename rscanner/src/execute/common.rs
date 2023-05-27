@@ -3,9 +3,7 @@ use std::time::Duration;
 
 use async_trait::async_trait;
 
-
 use crate::setting::command::ScanOpts;
-
 
 #[async_trait]
 pub trait SocketScanner {
@@ -31,7 +29,7 @@ pub trait SocketScanner {
         //         .unwrap_or_else(|e| tracing::error!("pre send socket error with {e:?}"));
         //     tokio::spawn(async move { Self::socket_success(socket_addr, per_timeout).await });
         // }
-        tokio::time::sleep(Duration::from_secs(scan_opts.timeout)).await;
+
         Self::after_scan().await?;
         Ok(())
     }

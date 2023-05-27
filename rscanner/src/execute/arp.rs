@@ -11,7 +11,6 @@ use pnet::packet::{MutablePacket, Packet};
 use crate::interfaces::{get_interface_ipv4, interface_normal_running};
 use crate::setting::command::ScanOpts;
 
-
 fn send_arp_packets(
     interface: NetworkInterface,
     source_ip: Ipv4Addr,

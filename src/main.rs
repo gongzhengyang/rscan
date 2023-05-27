@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use clap::Parser;
 
 use rscanner::execute;
@@ -40,7 +42,19 @@ async fn main() {
             execute::arp::scan(scan_opts).await.unwrap()
         }
         Executes::Show => {
-            println!("{scan_opts:?}");
+            println!("hosts len {}", scan_opts.hosts.len());
+            let socket_iter = scan_opts.iter_sockets().unwrap();
+            for socket in socket_iter {
+                let scan_opts_cloned = scan_opts.clone();
+                tokio::spawn(async move {
+                    assert_eq!(scan_opts_cloned.timeout, 30);
+                    if socket.ip().is_multicast() && socket.port() == 9999 {
+                        println!("{}", socket);
+                    }
+                    tokio::time::sleep(Duration::from_secs(10)).await;
+                });
+            }
         }
     }
+    tokio::time::sleep(Duration::from_secs(timeout)).await;
 }

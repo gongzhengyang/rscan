@@ -1,11 +1,8 @@
-use std::net::{
-    IpAddr, Ipv4Addr
-};
+use std::net::Ipv4Addr;
 use std::sync::Arc;
 
 use clap::{Parser, ValueEnum};
 
-use crate::err::APPError;
 use crate::setting::sockets_iter::SocketIterator;
 
 use super::parse::{parse_hosts, parse_ports};
@@ -68,42 +65,35 @@ pub struct ScanOpts {
 
 impl ScanOpts {
     pub fn iter_sockets(&self) -> anyhow::Result<SocketIterator> {
-        // let ips = self
-        //     .hosts
-        //     .iter()
-        //     .map(|x| IpAddr::V4(*x))
-        //     .collect::<Vec<IpAddr>>();
-        // let ports = self.ports.clone().ok_or(APPError::PortIsEmpty)?;
         Ok(SocketIterator::new(&self.hosts, &self.ports))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::net::SocketAddr;
-    use crate::execute::arp::scan;
+    use std::net::{IpAddr, SocketAddr};
     use std::str::FromStr;
+
     use super::*;
 
     #[test]
     fn iter_sockets() {
+        let ports = vec![1, 2, 3, 4];
+        let hosts = ["127.0.0.1", "192.168.0.1"]
+            .into_iter()
+            .map(|x| Ipv4Addr::from_str(x).unwrap())
+            .collect::<Vec<Ipv4Addr>>();
         let scan_opts = ScanOpts {
             execute: Executes::Tcp,
-            hosts: Arc::new(vec![Ipv4Addr::from([127, 0, 0, 1]),
-            Ipv4Addr::from([192, 168, 0, 1])]),
-            ports: Arc::new(vec![1, 2, 3]),
+            hosts: Arc::new(hosts.clone()),
+            ports: Arc::new(ports.clone()),
             ..Default::default()
         };
-        let iter = scan_opts.iter_sockets().unwrap();
-        for port in [1, 2] {
-            for host in ["127.0.0.1", "192.168.0.1"] {}
-
-        }
-        assert_eq!(iter.next(), );
-        SocketAddr::from_str("127.0.0.1:1").unwrap()
-        for socket in  {
-            println!("{}", socket);
+        let mut iter = scan_opts.iter_sockets().unwrap();
+        for port in &ports {
+            for host in &hosts {
+                assert_eq!(iter.next(), Some(SocketAddr::new(IpAddr::V4(*host), *port)));
+            }
         }
     }
-
 }
