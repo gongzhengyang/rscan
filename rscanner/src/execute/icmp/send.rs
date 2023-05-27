@@ -5,11 +5,10 @@ use std::time::Duration;
 use pnet::packet::icmp::echo_request::MutableEchoRequestPacket;
 use tokio::time::MissedTickBehavior;
 
-use crate::opts::ScanOpts;
-
 use super::common;
 use super::interface;
 use super::receive;
+use crate::setting::command::ScanOpts;
 
 static R: AtomicU64 = AtomicU64::new(0);
 

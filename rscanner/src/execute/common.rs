@@ -3,9 +3,9 @@ use std::time::Duration;
 
 use async_trait::async_trait;
 
-use crate::err::APPError;
-use crate::opts::ScanOpts;
-use crate::sockets_iter::SocketIterator;
+
+use crate::setting::command::ScanOpts;
+
 
 #[async_trait]
 pub trait SocketScanner {
@@ -23,20 +23,14 @@ pub trait SocketScanner {
 
     async fn scan(scan_opts: ScanOpts) -> anyhow::Result<()> {
         Self::pre_scan(&scan_opts).await?;
-        let ips = scan_opts
-            .hosts
-            .iter()
-            .map(|x| IpAddr::V4(*x))
-            .collect::<Vec<IpAddr>>();
-        let ports = scan_opts.ports.ok_or(APPError::PortIsEmpty)?;
-        let socket_iter = SocketIterator::new(&ips, &ports);
-        for socket_addr in socket_iter {
-            let per_timeout = scan_opts.per_timeout;
-            Self::pre_send_socket(&socket_addr)
-                .await
-                .unwrap_or_else(|e| tracing::error!("pre send socket error with {e:?}"));
-            tokio::spawn(async move { Self::socket_success(socket_addr, per_timeout).await });
-        }
+
+        // for socket_addr in &scan_opts.iter_sockets()? {
+        //     let per_timeout = scan_opts.per_timeout;
+        //     Self::pre_send_socket(&socket_addr)
+        //         .await
+        //         .unwrap_or_else(|e| tracing::error!("pre send socket error with {e:?}"));
+        //     tokio::spawn(async move { Self::socket_success(socket_addr, per_timeout).await });
+        // }
         tokio::time::sleep(Duration::from_secs(scan_opts.timeout)).await;
         Self::after_scan().await?;
         Ok(())

@@ -13,7 +13,7 @@ use tokio::net::UdpSocket;
 use tokio::sync::OnceCell;
 use tokio::time::Instant;
 
-use crate::opts::ScanOpts;
+use crate::setting::command::ScanOpts;
 
 use super::common::SocketScanner;
 use super::icmp;

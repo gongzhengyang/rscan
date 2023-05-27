@@ -2,7 +2,7 @@ use clap::Parser;
 
 use rscanner::execute;
 use rscanner::execute::common::SocketScanner;
-use rscanner::opts::{Executes, ScanOpts};
+use rscanner::setting::command::{Executes, ScanOpts};
 
 #[tokio::main]
 async fn main() {
@@ -38,6 +38,9 @@ async fn main() {
         Executes::Arp => {
             tracing::info!("execute arp scan");
             execute::arp::scan(scan_opts).await.unwrap()
+        }
+        Executes::Show => {
+            println!("{scan_opts:?}");
         }
     }
 }

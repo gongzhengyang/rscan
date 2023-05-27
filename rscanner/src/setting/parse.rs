@@ -27,6 +27,9 @@ pub fn parse_ipv4_cidr(value: &str) -> anyhow::Result<Vec<Ipv4Addr>> {
 }
 
 pub fn parse_ports(input: &str) -> anyhow::Result<Arc<Vec<u16>>> {
+    if input.eq("") {
+        return Ok(Arc::new(vec![]));
+    }
     let mut ports = vec![];
     for i in input.split(',') {
         if i.contains('-') {

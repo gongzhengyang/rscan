@@ -1,7 +1,12 @@
-use std::net::Ipv4Addr;
+use std::net::{
+    IpAddr, Ipv4Addr
+};
 use std::sync::Arc;
 
 use clap::{Parser, ValueEnum};
+
+use crate::err::APPError;
+use crate::setting::sockets_iter::SocketIterator;
 
 use super::parse::{parse_hosts, parse_ports};
 
@@ -18,6 +23,8 @@ pub enum Executes {
     Udp,
     /// send arp packets
     Arp,
+    /// config show
+    Show,
 }
 
 #[derive(Parser, Debug, Default, Clone)]
@@ -32,8 +39,8 @@ pub struct ScanOpts {
     pub hosts: Arc<Vec<Ipv4Addr>>,
 
     /// A list of comma separed ports to be scanned. Example: 80,443,1-100,1-7.
-    #[arg(short, long, value_parser = parse_ports)]
-    pub ports: Option<Arc<Vec<u16>>>,
+    #[arg(short, long, value_parser = parse_ports, default_value = "")]
+    pub ports: Arc<Vec<u16>>,
 
     /// The batch size for port scanning, it increases or slows the speed of
     /// scanning. Depends on the open file limit of your OS.  If you do 65535
@@ -57,4 +64,46 @@ pub struct ScanOpts {
     /// every single operation timeout, tcp connect timeout ro udp timeout
     #[arg(long, default_value_t = 3)]
     pub per_timeout: u64,
+}
+
+impl ScanOpts {
+    pub fn iter_sockets(&self) -> anyhow::Result<SocketIterator> {
+        // let ips = self
+        //     .hosts
+        //     .iter()
+        //     .map(|x| IpAddr::V4(*x))
+        //     .collect::<Vec<IpAddr>>();
+        // let ports = self.ports.clone().ok_or(APPError::PortIsEmpty)?;
+        Ok(SocketIterator::new(&self.hosts, &self.ports))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::net::SocketAddr;
+    use crate::execute::arp::scan;
+    use std::str::FromStr;
+    use super::*;
+
+    #[test]
+    fn iter_sockets() {
+        let scan_opts = ScanOpts {
+            execute: Executes::Tcp,
+            hosts: Arc::new(vec![Ipv4Addr::from([127, 0, 0, 1]),
+            Ipv4Addr::from([192, 168, 0, 1])]),
+            ports: Arc::new(vec![1, 2, 3]),
+            ..Default::default()
+        };
+        let iter = scan_opts.iter_sockets().unwrap();
+        for port in [1, 2] {
+            for host in ["127.0.0.1", "192.168.0.1"] {}
+
+        }
+        assert_eq!(iter.next(), );
+        SocketAddr::from_str("127.0.0.1:1").unwrap()
+        for socket in  {
+            println!("{}", socket);
+        }
+    }
+
 }

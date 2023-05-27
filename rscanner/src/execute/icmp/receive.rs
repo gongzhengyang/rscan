@@ -8,7 +8,6 @@ use pnet::packet::Packet;
 use tokio::sync::OnceCell;
 
 use super::common;
-use super::receive;
 
 static RECEIVE_PACKETS: OnceCell<Arc<Mutex<HashSet<IpAddr>>>> = OnceCell::const_new();
 
@@ -32,7 +31,7 @@ pub async fn receive_packets() -> anyhow::Result<()> {
     loop {
         tokio::time::sleep(Duration::from_nanos(1)).await;
         if let Ok(Some((packet, addr))) = iter.next_with_timeout(Duration::from_secs(1)) {
-            if receive::is_addr_received(&addr).await {
+            if is_addr_received(&addr).await {
                 return Ok(());
             }
             if let Some(reply_packet) = EchoReplyPacket::new(packet.packet()) {
