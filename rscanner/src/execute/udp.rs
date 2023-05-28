@@ -13,7 +13,7 @@ use tokio::net::UdpSocket;
 use tokio::sync::OnceCell;
 use tokio::time::Instant;
 
-use crate::opts::ScanOpts;
+use crate::setting::command::ScanOpts;
 
 use super::common::SocketScanner;
 use super::icmp;
@@ -129,7 +129,7 @@ async fn receive_icmp_packets() -> anyhow::Result<()> {
     let (_, mut rx) = icmp::common::get_transport_channel()?;
     let mut iter = pnet_transport::icmp_packet_iter(&mut rx);
     loop {
-        tokio::time::sleep(Duration::from_nanos(1)).await;
+        tokio::time::sleep(Duration::from_micros(10)).await;
         if let Ok(Some((packet, addr))) = iter.next_with_timeout(Duration::from_secs(1)) {
             if let Some(reply_packet) = EchoReplyPacket::new(packet.packet()) {
                 if reply_packet.get_icmp_code() == IcmpCodes::DestinationPortUnreachable {

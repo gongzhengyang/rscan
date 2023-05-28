@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 
 
+# 0.4.0 (28. May, 2023)
+
+- **added:** add `arp` scan support
+- **changed:** move `parse.rs, sockets_iter.rs` into `setting` directory
+
 # 0.3.0 (10. May, 2023)
 
 - **added:** add common trait named `SocketScanner` for `tcp/udp` scan

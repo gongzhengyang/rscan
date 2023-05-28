@@ -1,10 +1,5 @@
 export VERSION=$(shell head Cargo.toml -n 3 | tail -n 1| awk '{ print $$3}' | sed 's/"//g')
-export RUSTFLAGS=--cfg tokio_unstable
-
-.PHONY: fmt
-fmt:
-	cargo fmt
-	cargo clippy --all-features
+export RUSTFLAGS=--cfg tokio_unstable -C target-feature=+crt-static
 
 .PHONY: linux
 linux:

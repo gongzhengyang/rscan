@@ -3,6 +3,8 @@ use std::sync::Arc;
 
 use clap::{Parser, ValueEnum};
 
+use crate::setting::sockets_iter::SocketIterator;
+
 use super::parse::{parse_hosts, parse_ports};
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug, Default)]
@@ -16,6 +18,10 @@ pub enum Executes {
     Tcp,
     /// send udp packets to remote hosts to check udp opened based on icmp reply
     Udp,
+    /// send arp packets
+    Arp,
+    /// config show
+    Show,
 }
 
 #[derive(Parser, Debug, Default, Clone)]
@@ -30,8 +36,8 @@ pub struct ScanOpts {
     pub hosts: Arc<Vec<Ipv4Addr>>,
 
     /// A list of comma separed ports to be scanned. Example: 80,443,1-100,1-7.
-    #[arg(short, long, value_parser = parse_ports)]
-    pub ports: Option<Arc<Vec<u16>>>,
+    #[arg(short, long, value_parser = parse_ports, default_value = "")]
+    pub ports: Arc<Vec<u16>>,
 
     /// The batch size for port scanning, it increases or slows the speed of
     /// scanning. Depends on the open file limit of your OS.  If you do 65535
@@ -45,7 +51,7 @@ pub struct ScanOpts {
     pub timeout: u64,
 
     /// The number of retries for sending icmp,tcp,udp packets to remote host
-    #[arg(long, default_value_t = 0)]
+    #[arg(long, default_value_t = 1)]
     pub retry: u64,
 
     /// The seconds retry interval when retry is set bigger than 0
@@ -55,4 +61,39 @@ pub struct ScanOpts {
     /// every single operation timeout, tcp connect timeout ro udp timeout
     #[arg(long, default_value_t = 3)]
     pub per_timeout: u64,
+}
+
+impl ScanOpts {
+    pub fn iter_sockets(&self) -> anyhow::Result<SocketIterator> {
+        Ok(SocketIterator::new(&self.hosts, &self.ports))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::net::{IpAddr, SocketAddr};
+    use std::str::FromStr;
+
+    use super::*;
+
+    #[test]
+    fn iter_sockets() {
+        let ports = vec![1, 2, 3, 4];
+        let hosts = ["127.0.0.1", "192.168.0.1"]
+            .into_iter()
+            .map(|x| Ipv4Addr::from_str(x).unwrap())
+            .collect::<Vec<Ipv4Addr>>();
+        let scan_opts = ScanOpts {
+            execute: Executes::Tcp,
+            hosts: Arc::new(hosts.clone()),
+            ports: Arc::new(ports.clone()),
+            ..Default::default()
+        };
+        let mut iter = scan_opts.iter_sockets().unwrap();
+        for port in &ports {
+            for host in &hosts {
+                assert_eq!(iter.next(), Some(SocketAddr::new(IpAddr::V4(*host), *port)));
+            }
+        }
+    }
 }

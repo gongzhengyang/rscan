@@ -13,6 +13,7 @@ Fast scan network by sending `icmp`, `tcp/udp` packets, inspired by `nmap` but d
 - `icmp/ping`
 - `tcp`
 - `udp`
+- `arp`
 
 ## Usage
 
@@ -68,6 +69,23 @@ rscan|udp|10.30.6.165:161|
 rscan|udp|10.30.6.200:162|
 ...
 ```
+
+### `arp` Scan
+
+Use the `arp` protocol to scan `intranet` devices
+
+```
+$ sudo ./rscan arp 10.30.6.0/16
+rscan|arp|10.30.251.223|08:4f:a9:7c:5d:67|
+rscan|arp|10.30.251.224|08:4f:a9:7c:5d:67|
+rscan|arp|10.30.253.46|08:4f:a9:7c:5d:67|
+rscan|arp|10.30.253.62|08:4f:a9:7c:5d:67|
+rscan|arp|10.30.253.64|08:4f:a9:7c:5d:67|
+rscan|arp|10.30.254.53|08:4f:a9:7c:5d:67|
+....
+```
+
+
 
 ## License
 
