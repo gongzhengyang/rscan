@@ -8,8 +8,8 @@ use tokio::time::MissedTickBehavior;
 use super::common;
 use super::interface;
 use super::receive;
-use crate::setting::command::ScanOpts;
 use crate::monitor;
+use crate::setting::command::ScanOpts;
 
 static R: AtomicU64 = AtomicU64::new(0);
 

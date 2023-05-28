@@ -9,8 +9,8 @@ use pnet::packet::ethernet::MutableEthernetPacket;
 use pnet::packet::{MutablePacket, Packet};
 
 use crate::interfaces::{get_interface_ipv4, interface_normal_running};
-use crate::setting::command::ScanOpts;
 use crate::monitor;
+use crate::setting::command::ScanOpts;
 
 async fn send_arp_packets(
     interface: NetworkInterface,
@@ -23,7 +23,7 @@ async fn send_arp_packets(
     for target_ip in target_ips {
         let ipaddr = IpAddr::V4(target_ip);
         if monitor::is_addr_received(&ipaddr).await {
-            continue
+            continue;
         }
         let mut ethernet_buffer = [0u8; 42];
         let mut ethernet_packet = MutableEthernetPacket::new(&mut ethernet_buffer).unwrap();
@@ -66,11 +66,7 @@ async fn receive_packets(interface: NetworkInterface) {
                     continue;
                 }
                 monitor::add_receive_ipaddr(ipaddr).await;
-                println!(
-                    "rscan|arp|{}|{}|",
-                    sender_ipaddr,
-                    arp.get_sender_hw_addr()
-                );
+                println!("rscan|arp|{}|{}|", sender_ipaddr, arp.get_sender_hw_addr());
             }
         }
         tokio::time::sleep(Duration::from_micros(10)).await;
@@ -103,7 +99,9 @@ pub async fn scan(scan_opts: ScanOpts) -> anyhow::Result<()> {
         let source_ip = source_ip.unwrap();
         let target_ips = (*scan_opts.hosts).clone();
         let interface_cloned = interface.clone();
-        tokio::spawn(async move { send_arp_packets(interface_cloned, source_ip, target_ips).await });
+        tokio::spawn(
+            async move { send_arp_packets(interface_cloned, source_ip, target_ips).await },
+        );
         tokio::spawn(async move { receive_packets(interface).await });
     }
     Ok(())

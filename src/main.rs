@@ -30,7 +30,6 @@ async fn main() {
                     .await
                     .unwrap();
             });
-
         }
         Executes::Udp => {
             tracing::info!("execute udp scan");
@@ -43,7 +42,6 @@ async fn main() {
                     .await
                     .unwrap();
             });
-
         }
         Executes::Arp => {
             tracing::info!("execute arp scan");
