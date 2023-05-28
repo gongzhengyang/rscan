@@ -9,6 +9,7 @@ use super::common;
 use super::interface;
 use super::receive;
 use crate::setting::command::ScanOpts;
+use crate::monitor;
 
 static R: AtomicU64 = AtomicU64::new(0);
 
@@ -35,7 +36,7 @@ pub async fn scan(scan_opts: ScanOpts) -> anyhow::Result<()> {
         Err(_) => {
             tracing::info!("receive packets thread over because timeout");
             let send_count = R.load(Ordering::Relaxed);
-            let total_received = receive::receive_packets_handle()
+            let total_received = monitor::receive_packets_handle()
                 .await
                 .lock()
                 .unwrap()
@@ -57,7 +58,7 @@ pub async fn icmp_ips_chunks(hosts: Vec<Ipv4Addr>) -> anyhow::Result<()> {
         common::modify_icmp_packet(&mut icmp_packet);
         tracing::debug!("build icmp success for {host}");
         let target = IpAddr::from(host);
-        if receive::is_addr_received(&target).await {
+        if monitor::is_addr_received(&target).await {
             continue;
         }
         tx.send_to(icmp_packet, target).unwrap_or_else(|_| {

@@ -1,4 +1,4 @@
-use std::net::Ipv4Addr;
+use std::net::{IpAddr, Ipv4Addr};
 use std::time::Duration;
 
 use pnet::datalink::Config;
@@ -10,8 +10,9 @@ use pnet::packet::{MutablePacket, Packet};
 
 use crate::interfaces::{get_interface_ipv4, interface_normal_running};
 use crate::setting::command::ScanOpts;
+use crate::monitor;
 
-fn send_arp_packets(
+async fn send_arp_packets(
     interface: NetworkInterface,
     source_ip: Ipv4Addr,
     target_ips: Vec<Ipv4Addr>,
@@ -20,6 +21,10 @@ fn send_arp_packets(
     let (mut sender, _) = get_sender_receiver(&interface);
     tracing::info!("Sent ARP request with interface: {interface:?}");
     for target_ip in target_ips {
+        let ipaddr = IpAddr::V4(target_ip);
+        if monitor::is_addr_received(&ipaddr).await {
+            continue
+        }
         let mut ethernet_buffer = [0u8; 42];
         let mut ethernet_packet = MutableEthernetPacket::new(&mut ethernet_buffer).unwrap();
 
@@ -55,9 +60,15 @@ async fn receive_packets(interface: NetworkInterface) {
         if let Ok(buf) = receiver.next() {
             let arp = ArpPacket::new(&buf[MutableEthernetPacket::minimum_packet_size()..]).unwrap();
             if arp.get_operation() == ArpOperations::Reply {
+                let sender_ipaddr = arp.get_sender_proto_addr();
+                let ipaddr = IpAddr::V4(sender_ipaddr);
+                if monitor::is_addr_received(&ipaddr).await {
+                    continue;
+                }
+                monitor::add_receive_ipaddr(ipaddr).await;
                 println!(
                     "rscan|arp|{}|{}|",
-                    arp.get_sender_proto_addr(),
+                    sender_ipaddr,
                     arp.get_sender_hw_addr()
                 );
             }
@@ -92,9 +103,8 @@ pub async fn scan(scan_opts: ScanOpts) -> anyhow::Result<()> {
         let source_ip = source_ip.unwrap();
         let target_ips = (*scan_opts.hosts).clone();
         let interface_cloned = interface.clone();
-        tokio::spawn(async move { send_arp_packets(interface_cloned, source_ip, target_ips) });
+        tokio::spawn(async move { send_arp_packets(interface_cloned, source_ip, target_ips).await });
         tokio::spawn(async move { receive_packets(interface).await });
     }
-    tokio::time::sleep(Duration::from_secs(scan_opts.timeout)).await;
     Ok(())
 }

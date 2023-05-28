@@ -19,13 +19,18 @@ async fn main() {
     match scan_opts.execute {
         Executes::Icmp => {
             tracing::info!("execute icmp scan");
-            execute::icmp::scan(scan_opts.clone()).await.unwrap();
+            tokio::spawn(async move {
+                execute::icmp::scan(scan_opts.clone()).await.unwrap();
+            });
         }
         Executes::Tcp => {
             tracing::info!("execute tcp scan");
-            execute::tcp::TcpSocketScanner::scan(scan_opts)
-                .await
-                .unwrap();
+            tokio::spawn(async move {
+                execute::tcp::TcpSocketScanner::scan(scan_opts)
+                    .await
+                    .unwrap();
+            });
+
         }
         Executes::Udp => {
             tracing::info!("execute udp scan");
@@ -33,13 +38,18 @@ async fn main() {
                 "udp scan based on icmp reply with Port Unreachable with udp packets,\
              please make sure timeout is big enough to receive all icmp for all udp packets"
             );
-            execute::udp::UdpSocketScanner::scan(scan_opts)
-                .await
-                .unwrap();
+            tokio::spawn(async move {
+                execute::udp::UdpSocketScanner::scan(scan_opts)
+                    .await
+                    .unwrap();
+            });
+
         }
         Executes::Arp => {
             tracing::info!("execute arp scan");
-            execute::arp::scan(scan_opts).await.unwrap()
+            tokio::spawn(async move {
+                execute::arp::scan(scan_opts).await.unwrap();
+            });
         }
         Executes::Show => {
             println!("hosts len {}", scan_opts.hosts.len());
@@ -56,5 +66,5 @@ async fn main() {
             }
         }
     }
-    tokio::time::sleep(Duration::from_secs(timeout)).await;
+    tokio::time::sleep(Duration::from_secs(timeout + 1)).await;
 }

@@ -1,5 +1,4 @@
-use std::net::{IpAddr, SocketAddr};
-use std::time::Duration;
+use std::net::SocketAddr;
 
 use async_trait::async_trait;
 
@@ -22,13 +21,13 @@ pub trait SocketScanner {
     async fn scan(scan_opts: ScanOpts) -> anyhow::Result<()> {
         Self::pre_scan(&scan_opts).await?;
 
-        // for socket_addr in &scan_opts.iter_sockets()? {
-        //     let per_timeout = scan_opts.per_timeout;
-        //     Self::pre_send_socket(&socket_addr)
-        //         .await
-        //         .unwrap_or_else(|e| tracing::error!("pre send socket error with {e:?}"));
-        //     tokio::spawn(async move { Self::socket_success(socket_addr, per_timeout).await });
-        // }
+        for socket_addr in scan_opts.iter_sockets()? {
+            let per_timeout = scan_opts.per_timeout;
+            Self::pre_send_socket(&socket_addr)
+                .await
+                .unwrap_or_else(|e| tracing::error!("pre send socket error with {e:?}"));
+            tokio::spawn(async move { Self::socket_success(socket_addr, per_timeout).await });
+        }
 
         Self::after_scan().await?;
         Ok(())

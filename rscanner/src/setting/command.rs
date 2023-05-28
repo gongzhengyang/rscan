@@ -51,7 +51,7 @@ pub struct ScanOpts {
     pub timeout: u64,
 
     /// The number of retries for sending icmp,tcp,udp packets to remote host
-    #[arg(long, default_value_t = 0)]
+    #[arg(long, default_value_t = 1)]
     pub retry: u64,
 
     /// The seconds retry interval when retry is set bigger than 0
