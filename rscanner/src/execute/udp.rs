@@ -130,7 +130,7 @@ async fn receive_icmp_packets() -> anyhow::Result<()> {
     let mut iter = pnet_transport::icmp_packet_iter(&mut rx);
     loop {
         tokio::time::sleep(Duration::from_micros(10)).await;
-        if let Ok(Some((packet, addr))) = iter.next_with_timeout(Duration::from_secs(1)) {
+        if let Ok(Some((packet, addr))) = iter.next_with_timeout(Duration::from_millis(1)) {
             if let Some(reply_packet) = EchoReplyPacket::new(packet.packet()) {
                 if reply_packet.get_icmp_code() == IcmpCodes::DestinationPortUnreachable {
                     if let Some(ipv4_packet) = Ipv4Packet::new(reply_packet.payload()) {
