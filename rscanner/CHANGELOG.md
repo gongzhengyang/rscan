@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 # Unreleased
 
 - 
+# 0.4.1 (29. May, 2023)
+- **changed:** improve receive packets speed
 
 # 0.4.0 (28. May, 2023)
 
