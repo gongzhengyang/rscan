@@ -11,7 +11,7 @@ pub async fn receive_packets() -> anyhow::Result<()> {
     let mut iter = pnet_transport::icmp_packet_iter(&mut rx);
     loop {
         tokio::time::sleep(Duration::from_nanos(1)).await;
-        if let Ok(Some((packet, addr))) = iter.next_with_timeout(Duration::from_secs(1)) {
+        if let Ok(Some((packet, addr))) = iter.next_with_timeout(Duration::from_millis(1)) {
             if monitor::is_addr_received(&addr).await {
                 continue;
             }
