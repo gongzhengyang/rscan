@@ -7,6 +7,7 @@ Fast scan network by sending `icmp`, `tcp/udp` packets, inspired by `nmap` but d
 - `Linux`
 - `Android`
 - `FreeBSD`
+- `Macos`
 
 ## Supported Scan protocols
 

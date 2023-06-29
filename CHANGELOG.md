@@ -9,12 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 
 
-# 0.3.0 (10. May, 2023)
-
-- **added:** add `udp` scan argument in binary executor and readme
 
 
-# 0.2.1 (19. May, 2023)
+# 0.5.0 (2023-06-29)
+
+- **added:** add `macos` support
+
+# 0.3.0 (2023-05-20)
+
+- **added:** add `udp` scan argument in binary executor and `readme`
+
+
+# 0.2.1 (2023-05-19)
 
 - **added:** `cmd` parse with full `args`
 - **added:** add `tokio-console` for task schedule manage 
