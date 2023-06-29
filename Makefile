@@ -18,5 +18,13 @@ freebsd:
 android:
 	ARCH=aarch64-linux-android bash build-release.sh
 
+.PHONY: macos-intel
+macos-intel:
+	ARCH=x86_64-apple-darwin CARGO_PROFILE_RELEASE_STRIP=false  bash build-release.sh
+
+.PHONY: macos-arm
+macos-arm:
+	ARCH=aarch64-apple-darwin CARGO_PROFILE_RELEASE_STRIP=false  bash build-release.sh
+
 .PHONY: all
-all: linux freebsd android
+all: linux freebsd android macos-intel macos-arm
