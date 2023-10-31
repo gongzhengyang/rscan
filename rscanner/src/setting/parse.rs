@@ -67,7 +67,6 @@ mod tests {
         let cidr_start = u32::from(Ipv4Addr::from_str("1.1.1.0").unwrap());
         compare.extend(
             (0..256)
-                .into_iter()
                 .map(|x| Ipv4Addr::from(x + cidr_start))
                 .collect::<Vec<Ipv4Addr>>(),
         );

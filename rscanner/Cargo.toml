@@ -12,19 +12,17 @@ repository = "https://github.com/gongzhengyang/rscan"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version = "1", features = ["full", "tracing"] }
 anyhow = "1.0.71"
-pnet = "0.33"
-pnet_transport = "0.33"
-rand = "0.8"
-chrono = "0.4"
-serde = { version = "1", features = ["derive"]}
-serde_json = "1"
-rlimit = "0.9"
-clap = { version = "4.2", features = ["derive"] }
-ipnetwork = "0.20"
-tracing = "0.1"
 async-trait = "0.1"
-hashbrown  = "0.13"
-itertools = "0.10"
+clap = { version = "4.2", features = ["derive"] }
+hashbrown  = "0.14"
+ipnetwork = "0.20"
+itertools = "0.11"
+pnet = "0.34"
+pnet_transport = "0.34"
+rand = "0.8"
+rlimit = "0.10"
+serde = { version = "1", features = ["derive"] }
 thiserror = "1.0"
+tokio = { version = "1", features = ["full", "tracing"] }
+tracing = "0.1"
