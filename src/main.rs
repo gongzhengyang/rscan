@@ -4,7 +4,7 @@ use clap::Parser;
 
 use rscanner::execute;
 use rscanner::execute::common::SocketScanner;
-use rscanner::setting::command::{Executes, ScanOpts};
+use rscanner::setting::command::{ScanType, ScanOpts};
 
 #[tokio::main]
 async fn main() {
@@ -17,13 +17,13 @@ async fn main() {
     tracing::info!("waiting for {} seconds", timeout);
 
     match scan_opts.execute {
-        Executes::Icmp => {
+        ScanType::Icmp => {
             tracing::info!("execute icmp scan");
             tokio::spawn(async move {
                 execute::icmp::scan(scan_opts.clone()).await.unwrap();
             });
         }
-        Executes::Tcp => {
+        ScanType::Tcp => {
             tracing::info!("execute tcp scan");
             tokio::spawn(async move {
                 execute::tcp::TcpSocketScanner::scan(scan_opts)
@@ -31,7 +31,7 @@ async fn main() {
                     .unwrap();
             });
         }
-        Executes::Udp => {
+        ScanType::Udp => {
             tracing::info!("execute udp scan");
             tracing::warn!(
                 "udp scan based on icmp reply with Port Unreachable with udp packets,\
@@ -43,13 +43,13 @@ async fn main() {
                     .unwrap();
             });
         }
-        Executes::Arp => {
+        ScanType::Arp => {
             tracing::info!("execute arp scan");
             tokio::spawn(async move {
                 execute::arp::scan(scan_opts).await.unwrap();
             });
         }
-        Executes::Show => {
+        ScanType::Show => {
             println!("hosts len {}", scan_opts.hosts.len());
             let socket_iter = scan_opts.iter_sockets().unwrap();
             for socket in socket_iter {

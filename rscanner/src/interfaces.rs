@@ -1,6 +1,9 @@
 use std::net::{IpAddr, Ipv4Addr};
 
 use pnet::datalink::NetworkInterface;
+use snafu::OptionExt;
+
+use crate::err::{OptionEmptySnafu, Result};
 
 pub fn get_interface_ipv4(interface: &NetworkInterface) -> Option<Ipv4Addr> {
     interface
@@ -13,11 +16,12 @@ pub fn get_interface_ipv4(interface: &NetworkInterface) -> Option<Ipv4Addr> {
         })
 }
 
-pub fn get_interface_by_name(interface_name: &str) -> NetworkInterface {
-    pnet::datalink::interfaces()
+pub fn get_interface_by_name(interface_name: &str) -> Result<NetworkInterface> {
+    Ok(pnet::datalink::interfaces()
         .into_iter()
         .find(|interface| interface.name == interface_name)
-        .unwrap()
+        .context(OptionEmptySnafu)?
+    }
 }
 
 pub fn interface_normal_running(interface: &NetworkInterface) -> bool {

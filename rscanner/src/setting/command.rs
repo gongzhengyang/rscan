@@ -8,7 +8,7 @@ use crate::setting::sockets_iter::SocketIterator;
 use super::parse::{parse_hosts, parse_ports};
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug, Default)]
-pub enum Executes {
+pub enum ScanType {
     #[default]
     /// send icmp to discover hosts reply icmp packets,all packets build by rust purely
     /// use can be `sudo rscan icmp 1.1.1.1/24`
@@ -27,40 +27,38 @@ pub enum Executes {
 #[derive(Parser, Debug, Default, Clone)]
 #[command(author, version, about, long_about = None)]
 pub struct ScanOpts {
-    /// choose a  executor
+    /// choose scan type
     #[arg(value_enum)]
-    pub execute: Executes,
+    pub execute: ScanType,
 
-    /// A list of comma separated CIDRs, IPs, or hosts to be scanned. Example: 1.1.1.1,2.2.2.2/24
+    /// A list of comma separated CIDRs, IPs, or hosts to be scanned.
+    /// Eg: 1.1.1.1,2.2.2.2/24
     #[arg(value_parser = parse_hosts)]
     pub hosts: Arc<Vec<Ipv4Addr>>,
 
-    /// A list of comma separed ports to be scanned. Example: 80,443,1-100,1-7.
+    /// A list of comma separated ports to be scanned. Example: 80,443,1-100,1-7.
     #[arg(short, long, value_parser = parse_ports, default_value = "")]
     pub ports: Arc<Vec<u16>>,
 
-    /// The batch size for port scanning, it increases or slows the speed of
-    /// scanning. Depends on the open file limit of your OS.  If you do 65535
-    /// it will do every port at the same time. Although, your OS may not
-    /// support this.
-    #[arg(long, default_value_t = 64)]
+    /// The batch size for port scanning.
+    /// It increases or slows the speed of scanning.
+    /// Depends on the open file limit of your OS.
+    /// If you do 65535, it will do every port at the same time.
+    /// Although, your OS may not support this.
+    #[arg(long, default_value_t = 1024)]
     pub batch_size: usize,
 
     /// The global timeout in seconds before a port is assumed to be closed.
-    #[arg(long, default_value_t = 30)]
+    #[arg(long, default_value_t = 10)]
     pub timeout: u64,
 
     /// The number of retries for sending icmp,tcp,udp packets to remote host
-    #[arg(long, default_value_t = 1)]
+    #[arg(long, default_value_t = 3)]
     pub retry: u64,
 
     /// The seconds retry interval when retry is set bigger than 0
-    #[arg(long, default_value_t = 1)]
-    pub retry_interval: u64,
-
-    /// every single operation timeout, tcp connect timeout ro udp timeout
     #[arg(long, default_value_t = 3)]
-    pub per_timeout: u64,
+    pub retry_interval: u64,
 }
 
 impl ScanOpts {
@@ -84,7 +82,7 @@ mod tests {
             .map(|x| Ipv4Addr::from_str(x).unwrap())
             .collect::<Vec<Ipv4Addr>>();
         let scan_opts = ScanOpts {
-            execute: Executes::Tcp,
+            execute: ScanType::Tcp,
             hosts: Arc::new(hosts.clone()),
             ports: Arc::new(ports.clone()),
             ..Default::default()

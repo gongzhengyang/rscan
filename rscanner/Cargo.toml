@@ -17,12 +17,12 @@ async-trait = "0.1"
 clap = { version = "4.2", features = ["derive"] }
 hashbrown  = "0.14"
 ipnetwork = "0.20"
-itertools = "0.11"
+itertools = "0.12"
 pnet = "0.34"
 pnet_transport = "0.34"
 rand = "0.8"
 rlimit = "0.10"
 serde = { version = "1", features = ["derive"] }
-thiserror = "1.0"
+snafu = "0.7"
 tokio = { version = "1", features = ["full", "tracing"] }
 tracing = "0.1"

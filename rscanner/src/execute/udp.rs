@@ -1,17 +1,25 @@
 use std::net::{IpAddr, SocketAddr};
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use std::time::Duration;
 
 use async_trait::async_trait;
 use hashbrown::{HashMap, HashSet};
-use pnet::packet::icmp::destination_unreachable::IcmpCodes;
-use pnet::packet::icmp::echo_reply::EchoReplyPacket;
-use pnet::packet::ipv4::Ipv4Packet;
-use pnet::packet::udp::UdpPacket;
-use pnet::packet::Packet;
-use tokio::net::UdpSocket;
-use tokio::sync::OnceCell;
-use tokio::time::Instant;
+use pnet::packet::{
+    icmp::{
+        destination_unreachable::IcmpCodes,
+        echo_reply::EchoReplyPacket
+    },
+    ipv4::Ipv4Packet,
+    Packet,
+    udp::UdpPacket
+};
+use tokio::{
+    net::UdpSocket,
+    sync::{
+        Mutex, OnceCell
+    },
+    time::Instant
+};
 
 use crate::setting::command::ScanOpts;
 
@@ -60,12 +68,12 @@ async fn get_socket_manager() -> &'static Arc<Mutex<HashSet<SocketAddr>>> {
 }
 
 async fn add_socket_to_manager(socket: SocketAddr) {
-    let mut socket_manager = get_socket_manager().await.lock().unwrap();
+    let mut socket_manager = get_socket_manager().await.lock().await;
     socket_manager.insert(socket);
 }
 
 async fn remove_socket_from_manager(socket: &SocketAddr) {
-    let mut socket_manager = get_socket_manager().await.lock().unwrap();
+    let mut socket_manager = get_socket_manager().await.lock().await;
     let remove = socket_manager.remove(socket);
     tracing::debug!("remove {socket} {remove}");
 }
