@@ -1,13 +1,17 @@
 use std::net::{IpAddr, Ipv4Addr};
 use std::time::Duration;
 
-use pnet::datalink::Config;
-use pnet::datalink::{Channel, DataLinkReceiver, DataLinkSender, MacAddr, NetworkInterface};
-use pnet::packet::arp::{ArpHardwareTypes, ArpOperations, ArpPacket, MutableArpPacket};
-use pnet::packet::ethernet::EtherTypes;
-use pnet::packet::ethernet::MutableEthernetPacket;
-use pnet::packet::{MutablePacket, Packet};
+use pnet::datalink::{
+    Channel, Config, DataLinkReceiver, DataLinkSender, MacAddr, NetworkInterface,
+};
+use pnet::packet::{
+    arp::{ArpHardwareTypes, ArpOperations, ArpPacket, MutableArpPacket},
+    ethernet::{EtherTypes, MutableEthernetPacket},
+    MutablePacket, Packet,
+};
+use snafu::OptionExt;
 
+use crate::err::OptionEmptySnafu;
 use crate::interfaces::{get_interface_ipv4, interface_normal_running};
 use crate::monitor;
 use crate::setting::command::ScanOpts;
@@ -17,7 +21,7 @@ async fn send_arp_packets(
     source_ip: Ipv4Addr,
     target_ips: Vec<Ipv4Addr>,
 ) -> anyhow::Result<()> {
-    let mac = interface.mac.unwrap();
+    let mac = interface.mac.context(OptionEmptySnafu)?;
     let (mut sender, _) = get_sender_receiver(&interface);
     tracing::info!("Sent ARP request with interface: {interface:?}");
     for target_ip in target_ips {
@@ -26,14 +30,15 @@ async fn send_arp_packets(
             continue;
         }
         let mut ethernet_buffer = [0u8; 42];
-        let mut ethernet_packet = MutableEthernetPacket::new(&mut ethernet_buffer).unwrap();
+        let mut ethernet_packet =
+            MutableEthernetPacket::new(&mut ethernet_buffer).context(OptionEmptySnafu)?;
 
         ethernet_packet.set_destination(MacAddr::broadcast());
         ethernet_packet.set_source(mac);
         ethernet_packet.set_ethertype(EtherTypes::Arp);
 
         let mut arp_buffer = [0u8; 28];
-        let mut arp_packet = MutableArpPacket::new(&mut arp_buffer).unwrap();
+        let mut arp_packet = MutableArpPacket::new(&mut arp_buffer).context(OptionEmptySnafu)?;
 
         arp_packet.set_hardware_type(ArpHardwareTypes::Ethernet);
         arp_packet.set_protocol_type(EtherTypes::Ipv4);

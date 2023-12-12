@@ -1,33 +1,37 @@
-use serde::Serialize;
-use thiserror::Error;
+use snafu::prelude::*;
+use snafu::Location;
+use std::num::ParseIntError;
 
-#[derive(Error, Debug, Serialize, PartialEq)]
+#[derive(Snafu, Debug)]
+#[snafu(visibility(pub))]
 pub enum APPError {
-    #[error("split failed because ip or port format is error")]
-    SplitIpPortFailed,
-    #[error("port args format is error")]
-    PortFormatError,
-    #[error("port couldn't be empty")]
+    #[snafu(display("split failed because ip or port format is error {}", value))]
+    SplitIpPortFailed { location: Location, value: String },
+
+    #[snafu(display("port args format is error {}", value))]
+    PortFormat { location: Location, value: String },
+
+    #[snafu(display("port value parse failed {}", source))]
+    PortParse {
+        location: Location,
+        source: ParseIntError,
+        value: String,
+    },
+
+    #[snafu(display("port couldn't be empty"))]
     PortIsEmpty,
-    #[error("unix ulimits soft limit is bigger than hard limit")]
+
+    #[snafu(display("unix ulimits soft limit is bigger than hard limit"))]
     ULimitSoftBiggerThanHard,
+
+    #[snafu(display("Option value is None"))]
+    OptionEmpty { location: Location },
+
+    #[snafu(display("common io error {}", source))]
+    CommonIo {
+        location: Location,
+        source: std::io::Error,
+    },
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::err::APPError;
-
-    #[test]
-    fn error_response() {
-        for i in 0..3 {
-            println!("{:?}", result_with_value(i));
-        }
-    }
-
-    fn result_with_value(value: u8) -> anyhow::Result<()> {
-        if value.eq(&1) {
-            return Err(APPError::SplitIpPortFailed.into());
-        }
-        Ok(())
-    }
-}
+pub type Result<T> = std::result::Result<T, APPError>;

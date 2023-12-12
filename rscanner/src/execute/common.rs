@@ -22,11 +22,11 @@ pub trait SocketScanner {
         Self::pre_scan(&scan_opts).await?;
 
         for socket_addr in scan_opts.iter_sockets()? {
-            let per_timeout = scan_opts.per_timeout;
+            let retry_timeout = scan_opts.retry_interval;
             Self::pre_send_socket(&socket_addr)
                 .await
                 .unwrap_or_else(|e| tracing::error!("pre send socket error with {e:?}"));
-            tokio::spawn(async move { Self::socket_success(socket_addr, per_timeout).await });
+            tokio::spawn(async move { Self::socket_success(socket_addr, retry_timeout).await });
         }
 
         Self::after_scan().await?;

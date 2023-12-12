@@ -19,7 +19,7 @@ pub fn get_transport_channel() -> anyhow::Result<(TransportSender, TransportRece
     Ok(pnet_transport::transport_channel(4096, channel_type)?)
 }
 
-pub fn modify_icmp_packet(icmp_packet: &mut MutableEchoRequestPacket) {
+pub fn set_icmp_send_packet(icmp_packet: &mut MutableEchoRequestPacket) {
     icmp_packet.set_icmp_type(IcmpTypes::EchoRequest);
     icmp_packet.set_icmp_code(IcmpCodes::NoCode);
     icmp_packet.set_identifier(rand::random::<u16>());

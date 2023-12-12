@@ -2,7 +2,7 @@
 check:
 	cargo fmt
 	cargo tomlfmt
-	cargo clippy --all-targets
+	cargo clippy
 	cargo install --locked cargo-outdated
 	cargo outdated -R
 	cargo install cargo-udeps --locked

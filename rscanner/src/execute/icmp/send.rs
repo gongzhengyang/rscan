@@ -5,13 +5,14 @@ use std::time::Duration;
 use pnet::packet::icmp::echo_request::MutableEchoRequestPacket;
 use tokio::time::MissedTickBehavior;
 
-use super::common;
-use super::interface;
-use super::receive;
 use crate::monitor;
 use crate::setting::command::ScanOpts;
 
-static R: AtomicU64 = AtomicU64::new(0);
+use super::common;
+use super::interface;
+use super::receive;
+
+static SEND: AtomicU64 = AtomicU64::new(0);
 
 pub async fn scan(scan_opts: ScanOpts) -> anyhow::Result<()> {
     let mut interval = tokio::time::interval(Duration::from_secs(scan_opts.retry_interval));
@@ -30,17 +31,11 @@ pub async fn scan(scan_opts: ScanOpts) -> anyhow::Result<()> {
             interval.tick().await;
         }
     });
-    let result =
-        tokio::time::timeout(Duration::from_secs(timeout), receive::receive_packets()).await;
-    match result {
+    match tokio::time::timeout(Duration::from_secs(timeout), receive::receive_packets()).await {
         Err(_) => {
             tracing::info!("receive packets thread over because timeout");
-            let send_count = R.load(Ordering::Relaxed);
-            let total_received = monitor::receive_packets_handle()
-                .await
-                .lock()
-                .unwrap()
-                .len();
+            let send_count = SEND.load(Ordering::Relaxed);
+            let total_received = monitor::receive_packets_handle().await.lock().await.len();
             println!("send {send_count} ips, receive packets from {total_received} ips");
         }
         Ok(e) => {
@@ -53,21 +48,19 @@ pub async fn scan(scan_opts: ScanOpts) -> anyhow::Result<()> {
 pub async fn icmp_ips_chunks(hosts: Vec<Ipv4Addr>) -> anyhow::Result<()> {
     let (mut tx, _) = common::get_transport_channel()?;
     for host in hosts {
-        let mut header = [0u8; common::ICMP_LEN];
-        let mut icmp_packet = MutableEchoRequestPacket::new(&mut header).unwrap();
-        common::modify_icmp_packet(&mut icmp_packet);
-        tracing::debug!("build icmp success for {host}");
         let target = IpAddr::from(host);
         if monitor::is_addr_received(&target).await {
+            tracing::debug!("skip target {target} because received");
             continue;
         }
-        tx.send_to(icmp_packet, target).unwrap_or_else(|_| {
-            interface::send_with_interface(host);
-            0
-        });
-        // tx.send_to(icmp_packet, target).unwrap();
-        R.fetch_add(1, Ordering::Relaxed);
-        tracing::debug!("sending packets count {}", R.load(Ordering::Relaxed));
+        let mut header = [0u8; common::ICMP_LEN];
+        let mut icmp_packet = MutableEchoRequestPacket::new(&mut header).unwrap();
+        common::set_icmp_send_packet(&mut icmp_packet);
+        tracing::debug!("build icmp success for {host}");
+        if tx.send_to(icmp_packet, target).is_err() {
+            interface::send_with_interface(host).unwrap_or_default();
+        }
+        SEND.fetch_add(1, Ordering::Relaxed);
     }
     Ok(())
 }
