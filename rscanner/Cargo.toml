@@ -1,6 +1,6 @@
 [package]
 name = "rscanner"
-version = "0.5.0"
+version = "0.5.1"
 edition = "2021"
 categories = ["asynchronous", "command-line-utilities", "network-programming"]
 description = "Fast scan network by sending icmp, tcp, udp packets, inspired by nmap but doesn't depend on nmap"

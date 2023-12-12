@@ -49,7 +49,7 @@ pub struct ScanOpts {
     pub batch_size: usize,
 
     /// The global timeout in seconds before a port is assumed to be closed.
-    #[arg(long, default_value_t = 10)]
+    #[arg(long, default_value_t = 15)]
     pub timeout: u64,
 
     /// The number of retries for sending icmp,tcp,udp packets to remote host
