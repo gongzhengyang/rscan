@@ -3,8 +3,9 @@ use std::str::FromStr;
 use std::sync::Arc;
 
 use ipnetwork::Ipv4Network;
+use snafu::{IntoError, NoneError, ResultExt};
 
-use crate::err::{APPError, PortFormatSnafu};
+use crate::err::{PortFormatSnafu, PortParseSnafu, Result};
 
 /// parse input like
 /// single ip `192.168.1.1`
@@ -37,18 +38,20 @@ pub fn parse_ports(input: &str) -> anyhow::Result<Arc<Vec<u16>>> {
     Ok(Arc::new(ports))
 }
 
-pub fn parse_ports_range(input: &str) -> anyhow::Result<Vec<u16>> {
-    let range = input
-        .split('-')
-        .map(str::parse)
-        .collect::<Result<Vec<u16>, std::num::ParseIntError>>()?;
+pub fn parse_ports_range(input: &str) -> Result<Vec<u16>> {
+    let range = input.split('-').collect::<Vec<&str>>();
     if let [start, end] = range.as_slice() {
-        let result = (*start..*end).collect::<Vec<u16>>();
-        return Ok(result);
+        let parsed_start = start.parse::<u16>().context(PortParseSnafu {
+            value: start.to_owned(),
+        })?;
+        let parsed_end = end.parse::<u16>().context(PortParseSnafu {
+            value: end.to_owned(),
+        })?;
+        let result = (parsed_start..parsed_end).collect::<Vec<u16>>();
+        Ok(result)
+    } else {
+        Err(PortFormatSnafu { value: input }.into_error(NoneError))
     }
-    PortFormatSnafu {
-        value: input
-    }.into()
 }
 
 #[cfg(test)]
@@ -80,14 +83,14 @@ mod tests {
         for i in 0..4 {
             values.push(Ipv4Addr::from(i + min));
         }
-        assert_eq!(result, values);
+        assert_eq!(result, Arc::new(values));
     }
 
     #[test]
     fn ip_single() {
         assert_eq!(
             parse_hosts("192.168.1.1").unwrap(),
-            vec![Ipv4Addr::from_str("192.168.1.1").unwrap()]
+            Arc::new(vec![Ipv4Addr::from_str("192.168.1.1").unwrap()])
         );
     }
 }

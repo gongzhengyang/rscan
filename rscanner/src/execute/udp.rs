@@ -5,20 +5,15 @@ use std::time::Duration;
 use async_trait::async_trait;
 use hashbrown::{HashMap, HashSet};
 use pnet::packet::{
-    icmp::{
-        destination_unreachable::IcmpCodes,
-        echo_reply::EchoReplyPacket
-    },
+    icmp::{destination_unreachable::IcmpCodes, echo_reply::EchoReplyPacket},
     ipv4::Ipv4Packet,
     Packet,
-    udp::UdpPacket
+    udp::UdpPacket,
 };
 use tokio::{
     net::UdpSocket,
-    sync::{
-        Mutex, OnceCell
-    },
-    time::Instant
+    sync::{Mutex, OnceCell},
+    time::Instant,
 };
 
 use crate::setting::command::ScanOpts;
@@ -45,12 +40,12 @@ async fn get_udp_unreachable_addrs() -> &'static Arc<Mutex<HashSet<IpAddr>>> {
 }
 
 async fn add_udp_unreachable_addrs(addr: IpAddr) {
-    let mut handle = get_udp_unreachable_addrs().await.lock().unwrap();
+    let mut handle = get_udp_unreachable_addrs().await.lock().await;
     handle.insert(addr);
 }
 
 async fn ip_udp_send_interval_millis(ip: IpAddr) -> u128 {
-    let udp_last_send = get_upd_last_ip_send().await.lock().unwrap();
+    let udp_last_send = get_upd_last_ip_send().await.lock().await;
     let last_send = udp_last_send.get(&ip);
     if let Some(last_send) = last_send {
         let elapsed = last_send.elapsed().as_millis();
@@ -113,17 +108,17 @@ impl SocketScanner for UdpSocketScanner {
         let ip = socket.ip();
         let sleep_millis = ip_udp_send_interval_millis(ip).await;
         tokio::time::sleep(Duration::from_millis(sleep_millis as u64)).await;
-        let mut last_send = get_upd_last_ip_send().await.lock().unwrap();
+        let mut last_send = get_upd_last_ip_send().await.lock().await;
         last_send.insert(ip, Instant::now());
         Ok(())
     }
 
     async fn after_scan() -> anyhow::Result<()> {
         let udp_unreachable_addrs = {
-            let handle = get_udp_unreachable_addrs().await.lock().unwrap();
+            let handle = get_udp_unreachable_addrs().await.lock().await;
             (*handle).clone()
         };
-        let socket_manager = get_socket_manager().await.lock().unwrap();
+        let socket_manager = get_socket_manager().await.lock().await;
         for socket in &*socket_manager {
             if udp_unreachable_addrs.contains(&socket.ip()) {
                 println!("rscan|udp|{socket}|");

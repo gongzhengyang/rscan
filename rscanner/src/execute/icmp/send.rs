@@ -5,11 +5,12 @@ use std::time::Duration;
 use pnet::packet::icmp::echo_request::MutableEchoRequestPacket;
 use tokio::time::MissedTickBehavior;
 
+use crate::monitor;
+use crate::setting::command::ScanOpts;
+
 use super::common;
 use super::interface;
 use super::receive;
-use crate::monitor;
-use crate::setting::command::ScanOpts;
 
 static R: AtomicU64 = AtomicU64::new(0);
 
@@ -36,11 +37,7 @@ pub async fn scan(scan_opts: ScanOpts) -> anyhow::Result<()> {
         Err(_) => {
             tracing::info!("receive packets thread over because timeout");
             let send_count = R.load(Ordering::Relaxed);
-            let total_received = monitor::receive_packets_handle()
-                .await
-                .lock()
-                .unwrap()
-                .len();
+            let total_received = monitor::receive_packets_handle().await.lock().await.len();
             println!("send {send_count} ips, receive packets from {total_received} ips");
         }
         Ok(e) => {
@@ -62,7 +59,7 @@ pub async fn icmp_ips_chunks(hosts: Vec<Ipv4Addr>) -> anyhow::Result<()> {
             continue;
         }
         tx.send_to(icmp_packet, target).unwrap_or_else(|_| {
-            interface::send_with_interface(host);
+            interface::send_with_interface(host).unwrap();
             0
         });
         // tx.send_to(icmp_packet, target).unwrap();

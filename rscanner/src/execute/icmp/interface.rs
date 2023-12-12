@@ -1,5 +1,6 @@
 use std::net::Ipv4Addr;
 
+use crate::err::OptionEmptySnafu;
 use pnet::datalink::{Channel, MacAddr};
 use pnet::packet::ethernet::EtherTypes;
 use pnet::packet::ethernet::MutableEthernetPacket;
@@ -9,12 +10,11 @@ use pnet::packet::{
 };
 use pnet::packet::{MutablePacket, Packet};
 use snafu::OptionExt;
-use crate::err::OptionEmptySnafu;
 
+use super::common;
+use crate::err::Result;
 use crate::interfaces;
 use crate::interfaces::interface_normal_running;
-use crate::err::Result;
-use super::common;
 
 pub fn send_with_interface(target_ip: Ipv4Addr) -> Result<()> {
     tracing::debug!("{target_ip} send by specific interface");
@@ -24,7 +24,8 @@ pub fn send_with_interface(target_ip: Ipv4Addr) -> Result<()> {
         }
         if let Some(source_ip) = interfaces::get_interface_ipv4(&interface) {
             let mut header = [0u8; common::ICMP_LEN];
-            let mut icmp_packet = MutableEchoRequestPacket::new(&mut header).context(OptionEmptySnafu)?;
+            let mut icmp_packet =
+                MutableEchoRequestPacket::new(&mut header).context(OptionEmptySnafu)?;
             common::modify_icmp_packet(&mut icmp_packet);
 
             let mut ipv4_header = [0u8; common::IPV4_LEN];

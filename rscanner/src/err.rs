@@ -1,19 +1,20 @@
-use serde::Serialize;
-use snafu::Location;
 use snafu::prelude::*;
+use snafu::Location;
+use std::num::ParseIntError;
 
-#[derive(Snafu, Debug, Serialize, PartialEq)]
+#[derive(Snafu, Debug)]
 #[snafu(visibility(pub))]
 pub enum APPError {
     #[snafu(display("split failed because ip or port format is error {}", value))]
-    SplitIpPortFailed {
-        location: Location,
-        value: String
-    },
+    SplitIpPortFailed { location: Location, value: String },
 
     #[snafu(display("port args format is error {}", value))]
-    PortFormat {
+    PortFormat { location: Location, value: String },
+
+    #[snafu(display("port value parse failed {}", source))]
+    PortParse {
         location: Location,
+        source: ParseIntError,
         value: String,
     },
 
@@ -24,9 +25,7 @@ pub enum APPError {
     ULimitSoftBiggerThanHard,
 
     #[snafu(display("Option value is None"))]
-    OptionEmpty {
-        location: Location
-    },
+    OptionEmpty { location: Location },
 
     #[snafu(display("common io error {}", source))]
     CommonIo {
@@ -36,22 +35,3 @@ pub enum APPError {
 }
 
 pub type Result<T> = std::result::Result<T, APPError>;
-
-#[cfg(test)]
-mod tests {
-    use crate::err::APPError;
-
-    #[test]
-    fn error_response() {
-        for i in 0..3 {
-            println!("{:?}", result_with_value(i));
-        }
-    }
-
-    fn result_with_value(value: u8) -> anyhow::Result<()> {
-        if value.eq(&1) {
-            return Err(APPError::SplitIpPortFailed.into());
-        }
-        Ok(())
-    }
-}

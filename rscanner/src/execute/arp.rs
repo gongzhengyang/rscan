@@ -2,12 +2,12 @@ use std::net::{IpAddr, Ipv4Addr};
 use std::time::Duration;
 
 use pnet::datalink::{
-    Channel, Config, DataLinkReceiver, DataLinkSender, MacAddr, NetworkInterface
+    Channel, Config, DataLinkReceiver, DataLinkSender, MacAddr, NetworkInterface,
 };
 use pnet::packet::{
     arp::{ArpHardwareTypes, ArpOperations, ArpPacket, MutableArpPacket},
     ethernet::{EtherTypes, MutableEthernetPacket},
-    MutablePacket, Packet
+    MutablePacket, Packet,
 };
 use snafu::OptionExt;
 
@@ -30,16 +30,15 @@ async fn send_arp_packets(
             continue;
         }
         let mut ethernet_buffer = [0u8; 42];
-        let mut ethernet_packet = MutableEthernetPacket::new(
-            &mut ethernet_buffer).context(OptionEmptySnafu)?;
+        let mut ethernet_packet =
+            MutableEthernetPacket::new(&mut ethernet_buffer).context(OptionEmptySnafu)?;
 
         ethernet_packet.set_destination(MacAddr::broadcast());
         ethernet_packet.set_source(mac);
         ethernet_packet.set_ethertype(EtherTypes::Arp);
 
         let mut arp_buffer = [0u8; 28];
-        let mut arp_packet = MutableArpPacket::new(
-            &mut arp_buffer).context(OptionEmptySnafu)?;
+        let mut arp_packet = MutableArpPacket::new(&mut arp_buffer).context(OptionEmptySnafu)?;
 
         arp_packet.set_hardware_type(ArpHardwareTypes::Ethernet);
         arp_packet.set_protocol_type(EtherTypes::Ipv4);
