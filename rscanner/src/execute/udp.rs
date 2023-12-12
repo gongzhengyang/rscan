@@ -1,14 +1,14 @@
+use std::collections::{HashMap, HashSet};
 use std::net::{IpAddr, SocketAddr};
 use std::sync::Arc;
 use std::time::Duration;
 
 use async_trait::async_trait;
-use hashbrown::{HashMap, HashSet};
 use pnet::packet::{
     icmp::{destination_unreachable::IcmpCodes, echo_reply::EchoReplyPacket},
     ipv4::Ipv4Packet,
-    Packet,
     udp::UdpPacket,
+    Packet,
 };
 use tokio::{
     net::UdpSocket,

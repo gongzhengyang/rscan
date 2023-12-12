@@ -14,8 +14,8 @@ repository = "https://github.com/gongzhengyang/rscan"
 [dependencies]
 anyhow = "1.0.71"
 async-trait = "0.1"
+cached = "0.46"
 clap = { version = "4.2", features = ["derive"] }
-hashbrown  = "0.14"
 ipnetwork = "0.20"
 itertools = "0.12"
 pnet = "0.34"

@@ -4,18 +4,22 @@ use clap::Parser;
 
 use rscanner::execute;
 use rscanner::execute::common::SocketScanner;
-use rscanner::setting::command::{ScanType, ScanOpts};
+use rscanner::setting::command::{ScanOpts, ScanType};
 
 #[tokio::main]
 async fn main() {
     // used for tokio task manage
-    console_subscriber::init();
+    // console_subscriber::init();
+    tracing_subscriber::fmt::init();
     let scan_opts = ScanOpts::parse();
     #[cfg(unix)]
     rscanner::performance::improve_limits().unwrap();
     let timeout = scan_opts.timeout;
     tracing::info!("waiting for {} seconds", timeout);
 
+    let result_save_path = scan_opts.filepath.clone().unwrap_or_else(|| {
+        format!("tmp/{}.txt", chrono::Local::now().format("%Y-%m-%d--%H:%M:%S"))
+    });
     match scan_opts.execute {
         ScanType::Icmp => {
             tracing::info!("execute icmp scan");
@@ -65,4 +69,5 @@ async fn main() {
         }
     }
     tokio::time::sleep(Duration::from_secs(timeout + 1)).await;
+    rscanner::monitor::save_receive_addrs(&result_save_path).await.unwrap();
 }

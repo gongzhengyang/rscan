@@ -59,6 +59,10 @@ pub struct ScanOpts {
     /// The seconds retry interval when retry is set bigger than 0
     #[arg(long, default_value_t = 3)]
     pub retry_interval: u64,
+
+    /// save ipaddr results into file at `tmp/2023-12-12--16:25:55.txt` if the args is None
+    #[arg(long)]
+    pub filepath: Option<String>,
 }
 
 impl ScanOpts {
