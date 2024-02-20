@@ -2,11 +2,15 @@ export VERSION=$(shell head Cargo.toml -n 3 | tail -n 1| awk '{ print $$3}' | se
 export RUSTFLAGS=--cfg tokio_unstable -C target-feature=+crt-static
 
 .PHONY: all
-all: linux freebsd android macos-intel macos-arm
+all: linux freebsd android macos-intel macos-arm linux-arm
 
 .PHONY: linux
 linux:
 	ARCH=x86_64-unknown-linux-musl bash build-release.sh
+
+.PHONY: linux-arm
+linux-arm:
+	ARCH=aarch64-unknown-linux-musl bash build-release.sh
 
 #todo
 #.PHONY: windows

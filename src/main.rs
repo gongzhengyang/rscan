@@ -18,7 +18,10 @@ async fn main() {
     tracing::info!("waiting for {} seconds", timeout);
 
     let result_save_path = scan_opts.filepath.clone().unwrap_or_else(|| {
-        format!("tmp/{}.txt", chrono::Local::now().format("%Y-%m-%d--%H:%M:%S"))
+        format!(
+            "tmp/{}.txt",
+            chrono::Local::now().format("%Y-%m-%d--%H:%M:%S")
+        )
     });
     match scan_opts.execute {
         ScanType::Icmp => {
@@ -69,5 +72,7 @@ async fn main() {
         }
     }
     tokio::time::sleep(Duration::from_secs(timeout + 1)).await;
-    rscanner::monitor::save_receive_addrs(&result_save_path).await.unwrap();
+    rscanner::monitor::save_receive_addrs(&result_save_path)
+        .await
+        .unwrap();
 }
